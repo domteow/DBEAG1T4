@@ -87,7 +87,7 @@ def invoke_sendSMS():
         return jsonify({"code":404}),404
 
 #dom
-def invoke_directDebit(userID, PIN, accountFrom, accountTo, transactionAmount, transactionReferenceNumber='', narrative='', OTP = '999999'):
+def invoke_creditTransfer(userID, PIN, accountFrom, accountTo, transactionAmount, transactionReferenceNumber='', narrative='', OTP = '999999'):
     serviceName = 'directDebit'
 
     headerObj = {
