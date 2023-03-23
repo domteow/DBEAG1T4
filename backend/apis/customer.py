@@ -53,7 +53,7 @@ def customer_login():
 
 
 @app.route("/customer/getaccounts", methods=['POST'])
-def customer_get_details():
+def customer_get_accounts():
     data = request.get_json()
     response = invokes_tbank.invoke_get_customer_accounts(data)
 
@@ -81,6 +81,40 @@ def customer_get_details():
                     } 
             )
                        
+    elif errorCode == '010041':
+        return jsonify(
+            {
+                "code": 400,
+                "data": {},
+                'message': 'OTP has expired.\nYou will be receiving a SMS'
+            } 
+       )
+    else:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {},
+                'message': serviceRespHeader['ErrorText']
+            } 
+       )
+
+@app.route("/customer/getdetails", methods=['POST'])
+def customer_get_details():
+    data = request.get_json()
+    response = invokes_tbank.invoke_get_customer_details(data)
+
+    serviceRespHeader = response.json()['Content']['ServiceResponse']['ServiceRespHeader']
+    errorCode = serviceRespHeader['GlobalErrorID']
+
+    if errorCode == '010000':
+    
+       return jsonify(
+            {
+                "code": 200,
+                "data": response.json()
+            } 
+       )
+
     elif errorCode == '010041':
         return jsonify(
             {
