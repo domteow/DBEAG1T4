@@ -13,9 +13,7 @@ function Login() {
 	const auth = useAuth();
 
 	async function handleLogin(event) {
-		console.log('asoiugd');
 		event.preventDefault();
-		console.log(auth);
 		await auth
 			.login(username.current.value, password.current.value)
 			.then((response) => {
