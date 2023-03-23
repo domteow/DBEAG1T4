@@ -9,6 +9,7 @@ module.exports = {
 				secondary: '#64cff6',
 				card: '#1d1d41',
 				hover: '#4E43E4',
+				subtitle: '#8C89B4',
 			},
 		},
 	},
