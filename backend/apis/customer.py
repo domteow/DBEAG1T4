@@ -76,7 +76,7 @@ def customer_get_details():
            return jsonify(
                     {
                         "code": 200,
-                        "data": reply_data,
+                        "data": response.json(),
                         
                     } 
             )
