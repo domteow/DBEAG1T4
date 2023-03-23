@@ -8,29 +8,37 @@ export function AuthProvider({ children }) {
 	const navigate = useNavigate();
 
 	async function login(username, password) {
-		const API_URL = import.meta.env.VITE_API_URL;
-		const header = {
+		const Header = {
 			serviceName: 'getCustomerDetails',
 			userID: username,
 			PIN: password,
 			OTP: '999999',
 		};
+		const options = {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json;charset=UTF-8',
+			},
+			body: JSON.stringify(Header),
+		};
 
-		const encoded = encodeURI(JSON.stringify(header));
-
-		const res = await fetch(API_URL + `?Header=${encoded}&ConsumerID=RIB`)
+		const res = await fetch(
+			'http://localhost:5001/customer/getdetails',
+			options
+		)
 			.then((response) => response.json())
 			.then((data) => {
 				if (
-					data.Content.ServiceResponse.ServiceRespHeader.GlobalErrorID !=
+					data.data.Content.ServiceResponse.ServiceRespHeader.GlobalErrorID !=
 					'010000'
 				) {
 					return false;
 				} else {
-					setUser(data.Content.ServiceResponse.CDMCustomer);
+					setUser(data.data.Content.ServiceResponse.CDMCustomer);
 					localStorage.setItem(
 						'user',
-						JSON.stringify(data.Content.ServiceResponse.CDMCustomer)
+						JSON.stringify(data.data.Content.ServiceResponse.CDMCustomer)
 					);
 					return true;
 				}
