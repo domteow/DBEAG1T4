@@ -1,5 +1,5 @@
 .nav {
-	@apply bg-card h-screen p-4;
+	@apply bg-card h-screen p-4 flex flex-col justify-between;
 }
 
 /* Nav items */
@@ -29,4 +29,8 @@
 
 .nav-label > p {
 	@apply pl-4;
+}
+
+.profile-panel {
+	@apply grid grid-cols-[0.1fr,0.8fr,0.1fr] items-center text-white w-full;
 }
