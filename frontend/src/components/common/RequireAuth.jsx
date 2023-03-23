@@ -5,8 +5,7 @@ import { useAuth } from '../../auth';
 function RequireAuth({ children }) {
 	const auth = useAuth();
 
-	const user = localStorage.getItem('userDetails');
-
+	const user = auth.user;
 	if (user) {
 		auth.user = user;
 	}

@@ -17,22 +17,21 @@ export function AuthProvider({ children }) {
 		};
 
 		const encoded = encodeURI(JSON.stringify(header));
-		console.log(encoded);
 
-		fetch(API_URL + `?Header=${encoded}&ConsumerID=RIB`)
+		const res = await fetch(API_URL + `?Header=${encoded}&ConsumerID=RIB`)
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				if (
 					data.Content.ServiceResponse.ServiceRespHeader.GlobalErrorID !=
 					'010000'
 				) {
-					return 'Error';
+					return false;
 				} else {
 					setUser(data.Content.ServiceResponse.CDMCustomer);
-					navigate('/home');
+					return true;
 				}
 			});
+		return res;
 	}
 
 	const logout = () => {

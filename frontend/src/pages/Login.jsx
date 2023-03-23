@@ -8,6 +8,7 @@ import { useAuth } from '../auth';
 function Login() {
 	const username = useRef();
 	const password = useRef();
+	const navigate = useNavigate();
 
 	const auth = useAuth();
 
@@ -19,21 +20,15 @@ function Login() {
 			.login(username.current.value, password.current.value)
 			.then((response) => {
 				if (!response) {
-					console.log('asjigd');
 				} else {
-					console.log(response);
+					setTimeout(() => navigate('/home', { replace: true }), 1);
 				}
 			});
 	}
 
 	return (
 		<div className='login'>
-			<div
-				className='login-box'
-				// onSubmit={() =>
-				// 	handleLogin(username.current.value, password.current.value)
-				// }
-			>
+			<form className='login-box' onSubmit={(e) => handleLogin(e)}>
 				<img src={logo} className='h-[50px]' alt='' />
 
 				<input
@@ -47,14 +42,10 @@ function Login() {
 					placeholder='Password'
 					ref={password}
 				/>
-				<button
-					type='submit'
-					className='login-button'
-					onClick={(e) => handleLogin(e)}
-				>
+				<button type='submit' className='login-button'>
 					Login
 				</button>
-			</div>
+			</form>
 		</div>
 	);
 }
