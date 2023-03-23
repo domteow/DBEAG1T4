@@ -91,7 +91,7 @@ def invoke_sendSMS():
 
 #dom
 def invoke_creditTransfer(userID, PIN, accountFrom, accountTo, transactionAmount, transactionReferenceNumber='', narrative='', OTP = '999999'):
-    serviceName = 'directDebit'
+    serviceName = 'creditTransfer'
 
     headerObj = {
                     'Header': {
@@ -114,6 +114,7 @@ def invoke_creditTransfer(userID, PIN, accountFrom, accountTo, transactionAmount
     
     final_url="{0}?Header={1}&Content={2}".format(url(),json.dumps(headerObj),json.dumps(contentObj))
     response = requests.post(final_url)
+    print(final_url)
     serviceRespHeader = response.json()['Content']['ServiceResponse']['ServiceRespHeader']
     errorCode = serviceRespHeader['GlobalErrorID']
 
@@ -131,7 +132,8 @@ def invoke_creditTransfer(userID, PIN, accountFrom, accountTo, transactionAmount
     else:
         return jsonify({"error":serviceRespHeader['ErrorText']}),500
 
-    
+# test from dom to bruno account
+# invoke_creditTransfer('domteow','999999', '10008', '9998', '90')
 
 ##################################################################
 ###### CUSTOMER LOGIN FUNCTION
