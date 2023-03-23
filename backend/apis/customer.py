@@ -29,10 +29,7 @@ def customer_login():
        return jsonify(
             {
                 "code": 200,
-                "data": {
-                    "CustomerID": LoginOTPAuthenticateResponseObj['CustomerID'],
-                    "BankID": LoginOTPAuthenticateResponseObj['BankID']
-                },
+                "data": login_response.json(),
                 'message': 'Login Successful'
             } 
        )
@@ -104,8 +101,8 @@ def customer_get_details():
 
 
 
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001, debug=True)
     # app.run(host='0.0.0.0', port=5002, debug=True)
 
 
