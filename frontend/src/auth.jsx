@@ -28,6 +28,10 @@ export function AuthProvider({ children }) {
 					return false;
 				} else {
 					setUser(data.Content.ServiceResponse.CDMCustomer);
+					localStorage.setItem(
+						'user',
+						JSON.stringify(data.Content.ServiceResponse.CDMCustomer)
+					);
 					return true;
 				}
 			});
@@ -35,6 +39,7 @@ export function AuthProvider({ children }) {
 	}
 
 	const logout = () => {
+		localStorage.removeItem('user');
 		setUser(null);
 	};
 
