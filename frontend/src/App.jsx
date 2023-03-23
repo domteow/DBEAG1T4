@@ -1,28 +1,30 @@
 import { useState } from 'react';
 import './App.css';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, Outlet } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SideNavLayout from './layouts/SideNavLayout';
 import './index.css';
-
-// const ProtectedRoute = ({ user, redirectPath = '/landing' }) => {
-//   if (!user) {
-//     return <Navigate to={redirectPath} replace />;
-//   }
-
-//   return <Outlet />;
-// };
-
+import RequireAuth from './components/common/RequireAuth';
+import { AuthProvider } from './auth';
 function App() {
 	return (
-		<Routes>
-			<Route path='login' element={<Login />}></Route>
-			<Route path='/' element={<SideNavLayout />}>
-				<Route path='home' element={<Home />}></Route>
-			</Route>
-		</Routes>
+		<AuthProvider>
+			<Routes>
+				<Route path='login' element={<Login />}></Route>
+				<Route
+					path='/'
+					element={
+						<RequireAuth>
+							<SideNavLayout />
+						</RequireAuth>
+					}
+				>
+					<Route path='home' element={<Home />}></Route>
+				</Route>
+			</Routes>
+		</AuthProvider>
 	);
 }
 
