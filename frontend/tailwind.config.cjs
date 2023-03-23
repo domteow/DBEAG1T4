@@ -8,6 +8,7 @@ module.exports = {
 				primary: '#6359e9',
 				secondary: '#64cff6',
 				card: '#1d1d41',
+				hover: '#4E43E4',
 			},
 		},
 	},

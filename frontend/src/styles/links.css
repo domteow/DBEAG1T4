@@ -1,3 +1,32 @@
-.link {
-	@apply text-white w-full block p-4 bg-primary rounded-xl;
+.nav {
+	@apply bg-card h-screen p-4;
+}
+
+/* Nav items */
+
+.nav-radio {
+	display: none;
+}
+
+.nav-radio:checked + label {
+	background-position: left;
+	color: white;
+}
+
+.nav-label {
+	color: rgb(255, 255, 255);
+	grid-template-columns: 50px 1fr;
+	align-items: center;
+	width: 100%;
+	cursor: pointer;
+	background: linear-gradient(to left, rgb(255, 255, 255) 50%, #4d43e4 49%)
+		right;
+	background-size: 200%;
+	transition: 0.5s ease-out;
+
+	@apply flex p-4 rounded-lg;
+}
+
+.nav-label > p {
+	@apply pl-4;
 }
