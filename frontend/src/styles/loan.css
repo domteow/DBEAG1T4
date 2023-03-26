@@ -1,0 +1,15 @@
+.loandetail{
+    @apply bg-neutral-200 text-black p-8 mx-2 mb-6 border rounded-md;
+}
+
+.loanheader{
+    @apply bg-neutral-200 text-sky-800 text-2xl;
+}
+
+.loaninfo{
+    @apply text-base font-normal mt-2 p-2 grid gap-4;
+}
+
+.loanbutton{
+    @apply rounded-md font-normal p-3 mx-2 mb-6 bg-lime-600 text-base float-right;
+}

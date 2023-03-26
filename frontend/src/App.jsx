@@ -4,6 +4,8 @@ import { Routes, Route, Link, Navigate, Outlet } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import AllLoans from './pages/AllLoans'
+import LoanDetails from './pages/LoanDetails'
 import SideNavLayout from './layouts/SideNavLayout';
 import './index.css';
 import RequireAuth from './components/common/RequireAuth';
@@ -22,6 +24,8 @@ function App() {
 					}
 				>
 					<Route path='home' element={<Home />}></Route>
+					<Route path='loan/:detail' element={<LoanDetails />}></Route>
+					<Route path='loan' element={<AllLoans />}></Route>
 				</Route>
 			</Routes>
 		</AuthProvider>

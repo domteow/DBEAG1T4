@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/nav.css';
-import { HomeIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserCircleIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import NavItem from './common/NavItem';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth';
@@ -24,6 +24,14 @@ function SideNav() {
 					id='home'
 					onClick={() => navigate('home')}
 					checked={location.pathname === '/home'}
+				/>
+				<NavItem
+					label="All Loans"
+					Icon={() => <CurrencyDollarIcon className='h-6 w-6'/>}
+					name= 'nav'
+					id='loan'
+					onClick={()=> navigate('loan')}
+					checked={location.pathname === '/loan'}
 				/>
 			</div>
 			<div className='profile-panel'>

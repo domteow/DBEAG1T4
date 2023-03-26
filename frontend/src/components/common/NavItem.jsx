@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 function NavItem(props) {
 	const Icon = props.Icon;
 	return (
-		<>
+		<div className="mb-4">
 			{props.checked ? (
 				<input
 					className='nav-radio'
@@ -26,7 +26,7 @@ function NavItem(props) {
 				{Icon ? <Icon /> : ''}
 				<p>{props.label}</p>
 			</label>
-		</>
+		</div>
 	);
 }
 
