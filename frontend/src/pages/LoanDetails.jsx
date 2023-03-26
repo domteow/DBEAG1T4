@@ -43,7 +43,7 @@ function LoanDetails() {
             </div>
 
             <button className='loanbutton'>
-                Apply for Loan
+                Fund the loan
             </button>
 		</div>
 	);

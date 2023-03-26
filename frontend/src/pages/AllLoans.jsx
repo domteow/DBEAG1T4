@@ -71,7 +71,7 @@ function AllLoans() {
 
     return (
         <div className='home'>
-            <div className='mb-10'>Loan Requests</div>
+            <div className='mb-10'>Available Loans</div>
             <Table
                 columns= {columns}
                 dataSource= {data}
