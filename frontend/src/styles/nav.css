@@ -19,8 +19,7 @@
 	align-items: center;
 	width: 100%;
 	cursor: pointer;
-	background: linear-gradient(to left, rgb(255, 255, 255) 50%, #4d43e4 49%)
-		right;
+	background: linear-gradient(to left, #1d1d41 50%, #4d43e4 49%) right;
 	background-size: 200%;
 	transition: 0.5s ease-out;
 
