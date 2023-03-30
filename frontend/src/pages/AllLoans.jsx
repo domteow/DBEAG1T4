@@ -39,11 +39,11 @@ function AllLoans() {
             render: (text) => <span className='font-normal'>{text}</span>
         },
         {
-            title: '',
+            title: 'Info',
             key: 'action',
             align: 'center',
             render: (text) => (
-                <a onClick={goToDetails}>Click to know more</a>
+                <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
             )
         },
         ];

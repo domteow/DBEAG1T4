@@ -39,8 +39,8 @@ function SideNav() {
 					Icon={() => <CurrencyDollarIcon className='h-6 w-6'/>}
 					name= 'nav'
 					id='myloan'
-					onClick={()=> navigate('loan')}
-					checked={location.pathname === '/loan'}
+					onClick={()=> navigate('myloan')}
+					checked={location.pathname === '/myloan'}
 				/>
 			</div>
 			<div className='profile-panel'>
