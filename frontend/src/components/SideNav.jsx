@@ -26,10 +26,19 @@ function SideNav() {
 					checked={location.pathname === '/home'}
 				/>
 				<NavItem
-					label="All Loans"
+					label="View Loans"
 					Icon={() => <CurrencyDollarIcon className='h-6 w-6'/>}
 					name= 'nav'
 					id='loan'
+					onClick={()=> navigate('loan')}
+					checked={location.pathname === '/loan'}
+				/>
+
+				<NavItem
+					label="My Loans"
+					Icon={() => <CurrencyDollarIcon className='h-6 w-6'/>}
+					name= 'nav'
+					id='myloan'
 					onClick={()=> navigate('loan')}
 					checked={location.pathname === '/loan'}
 				/>
@@ -38,7 +47,7 @@ function SideNav() {
 				<UserCircleIcon className='h-10 w-10 text-white' />
 				<div>
 					<p className='font-bold'>
-						{user.givenName} {user.familyName}
+						{/* {user.givenName} {user.familyName} */}
 					</p>
 				</div>
 				<button className='subtitle' onClick={() => auth.logout()}>
