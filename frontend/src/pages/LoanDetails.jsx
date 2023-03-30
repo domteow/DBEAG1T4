@@ -26,7 +26,7 @@ function LoanDetails() {
             
             <div className='loandetail'>
                 <div className='loanheader'>
-                    Borrower Details
+                    Personnel Details
                 </div>
                 <div className='loaninfo grid-cols-2'>
                     <InputText label="Name" value="Wong Jing Yun"/>
@@ -51,7 +51,7 @@ function LoanDetails() {
                 </div>
             </div>
             {location.pathname.split('/')[1] == "loan" ? 
-            <button className='loanbutton'>
+            <button className='loanbutton-details'>
                 Fund the loan
             </button> : <div></div>}
 		</div>

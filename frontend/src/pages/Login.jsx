@@ -12,16 +12,20 @@ function Login() {
 
 	const auth = useAuth();
 
-	async function handleLogin(event) {
-		event.preventDefault();
-		await auth
-			.login(username.current.value, password.current.value)
-			.then((response) => {
-				if (!response) {
-				} else {
-					setTimeout(() => navigate('/home', { replace: true }), 1);
-				}
-			});
+	// async function handleLogin(event) {
+	// 	event.preventDefault();
+	// 	await auth
+	// 		.login(username.current.value, password.current.value)
+	// 		.then((response) => {
+	// 			if (!response) {
+	// 			} else {
+	// 				setTimeout(() => navigate('/home', { replace: true }), 1);
+	// 			}
+	// 		});
+	// }
+
+	function handleLogin(){
+		navigate('/home')
 	}
 
 	return (
@@ -40,7 +44,7 @@ function Login() {
 					placeholder='Password'
 					ref={password}
 				/>
-				<button type='submit' className='login-button'>
+				<button type='submit' className='login-button' onClick={handleLogin}>
 					Login
 				</button>
 			</form>
