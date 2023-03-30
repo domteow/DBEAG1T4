@@ -19,14 +19,15 @@ function App() {
 				<Route
 					path='/'
 					element={
-						<RequireAuth>
+						// <RequireAuth>
 							<SideNavLayout />
-						</RequireAuth>
+						// </RequireAuth>
 					}
 				>
 					<Route path='home' element={<Home />}></Route>
 					<Route path='loan/:detail' element={<LoanDetails />}></Route>
 					<Route path='loan' element={<AllLoans />}></Route>
+					<Route path='myloan/:detail' element={<LoanDetails />}></Route>
 					<Route path='myloan' element={<MyLoan />}></Route>
 				</Route>
 			</Routes>

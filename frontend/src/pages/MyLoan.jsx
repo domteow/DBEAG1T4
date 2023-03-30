@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Table, Space} from 'antd'
+import {Table, Space} from 'antd';
+import {CheckCircleIcon} from '@heroicons/react/20/solid';
+import {XCircleIcon} from '@heroicons/react/20/solid';
 
 function MyLoan() {
     const navigate = useNavigate();
     const id = 1;
 
     function goToDetails(event){
-        navigate('/loan/' + id, {replace: true})
+        navigate('/myloan/' + id, {replace: true})
     }
     function makePayment(event){
         // send repayment calculation here
@@ -50,6 +52,17 @@ function MyLoan() {
                 <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
             )
         },
+        {
+            title: 'Accept/Deny',
+            key: 'action',
+            align: 'center',
+            render: (text) => (
+                <div className='flex around place-content-center'>
+                    <CheckCircleIcon className='text-green-500 w-14'></CheckCircleIcon>
+                    <XCircleIcon className="text-red-500 w-14"></XCircleIcon>
+                </div>
+            )
+        }
         ];
 
         const data = [
