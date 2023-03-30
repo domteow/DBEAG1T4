@@ -18,7 +18,7 @@ db=SQLAlchemy(app)
 CORS(app)
 
 class CreditScore(db.Model):
-    __tablename__ = 'credit_score'
+    __tablename__ = 'creditscore'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, nullable=False)

@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS CreditScoreDB;
-CREATE DATABASE IF NOT EXISTS CreditScoreDB;
+CREATE DATABASE CreditScoreDB;
 USE CreditScoreDB;
 
 
@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS CreditScore (
     
 );
 
-INSERT INTO CreditScore (credit_score, user_id)
-VALUES (1, 750), (2, 600), (3, 800), (1, 600), (3, 500), (4, 800);
+INSERT INTO CreditScore (user_id, credit_score)
+VALUES (1, 750), (2, 600), (3, 800);
