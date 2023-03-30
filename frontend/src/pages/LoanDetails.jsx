@@ -1,13 +1,30 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { React, useState, useEffect } from 'react';
+import { useNavigate, useLocation} from 'react-router-dom';
 import '../styles/loan.css';
 import InputText from '../components/InputText';
+import PersonalDetails from '../components/PersonalDetails';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 
 function LoanDetails() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [loanInfo, setLoanInfo] = useState({});
+
+    useEffect(() => {
+        const loanInformation = {
+                loanId: "1001100",
+                loanAmt: 6000,
+                loanInterestAmt: 100,
+                loanPeriod: "30/3/2023 - 1/5/2023",
+                loanRate: 5,
+                loanRepaymentAmt: 100,
+                loanRepaymentPeriod: 6,
+                loanPurpose: "Hello World, I am here due to my need to fundraise for my oversea studies."
+            };
+
+        setLoanInfo(loanInformation)
+    },loanInfo);
 
     function back_button() {
         if (location.pathname.split('/')[1] == "loan") {
@@ -25,30 +42,24 @@ function LoanDetails() {
             </div>
             
             <div className='loandetail'>
-                <div className='loanheader'>
-                    Personnel Details
-                </div>
-                <div className='loaninfo grid-cols-2'>
-                    <InputText label="Name" value="Wong Jing Yun"/>
-                    <InputText label="Credit Score" value="A+"/>
-                    <InputText label="Nationality" value="Singaporean"/>
-                    <InputText label="Occupation" value="Lecturer"/>
-                    <InputText label="Customer Type" value="Retail"/>
-                </div>
+                <PersonalDetails />
             </div>
 
             <div className='loandetail'>
                 <div className='loanheader'>
                     Loan Details
                 </div>
-                <div className='loaninfo grid-cols-3'>
-                    <InputText label="Loan ID" value= "1001100"/>
-                    <InputText label="Loan Term" value= "2 years"/>
-                    <InputText label="Loan Amount" value= "SGD 6000"/>
-                    <InputText label="Interest Rate" value= "5%"/>
-                    <InputText label="Repayment Period" value= "6 months"/>
-                    <InputText label="Loan Purpose" value= "I need money for personal business and housing"/>
-                </div>
+                <div className='loaninfo grid-cols-3'> 
+                    <InputText label="Loan ID" value= {loanInfo['loanId']}/>
+                    <InputText label="Loan Term" value= {loanInfo['loanTerm'] + " months"}/>
+                    <InputText label="Loan Period" value= {loanInfo['loanPeriod']} />
+                    <InputText label="Loan Amount" value= {"SGD $" + loanInfo['loanAmt']} />
+                    <InputText label="Interest Rate" value= {loanInfo['loanRate'] + " %"}/>
+                    <InputText label="Repayment Amount" value= {loanInfo['loanRepaymentAmt']} />
+                    <InputText label="Repayment Period" value= {loanInfo['loanRepaymentPeriod'] + " months"}/>
+                    <InputText label="Total Interest Amount" value= {"SGD $" + loanInfo['loanInterestAmt']}/>
+                    <InputText label="Loan Purpose" value= {loanInfo['loanPurpose']}/>
+                </div> 
             </div>
             {location.pathname.split('/')[1] == "loan" ? 
             <button className='loanbutton-details'>
