@@ -6,7 +6,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import AllLoans from './pages/AllLoans'
 import LoanDetails from './pages/LoanDetails'
+import MyLoan from './pages/MyLoan'
 import SideNavLayout from './layouts/SideNavLayout';
+import CreateLoan from './pages/CreateLoan';
 import './index.css';
 import RequireAuth from './components/common/RequireAuth';
 import { AuthProvider } from './auth';
@@ -18,14 +20,17 @@ function App() {
 				<Route
 					path='/'
 					element={
-						<RequireAuth>
+						// <RequireAuth>
 							<SideNavLayout />
-						</RequireAuth>
+						// </RequireAuth>
 					}
 				>
 					<Route path='home' element={<Home />}></Route>
 					<Route path='loan/:detail' element={<LoanDetails />}></Route>
 					<Route path='loan' element={<AllLoans />}></Route>
+					<Route path='myloan/:detail' element={<LoanDetails />}></Route>
+					<Route path='myloan' element={<MyLoan />}></Route>
+					<Route path='create/loan' element={<CreateLoan />}></Route>
 				</Route>
 			</Routes>
 		</AuthProvider>

@@ -10,6 +10,14 @@
     @apply text-base font-normal mt-2 p-2 grid gap-4;
 }
 
-.loanbutton{
+.loanbutton-details{
     @apply rounded-md font-normal p-3 mx-2 mb-6 bg-lime-600 text-base float-right;
+}
+
+.loanbutton{
+    @apply rounded-md font-normal p-3 mx-2 mb-6 bg-yellow-500 text-base float-right;
+}
+
+.loan-header{
+    @apply flex justify-between
 }

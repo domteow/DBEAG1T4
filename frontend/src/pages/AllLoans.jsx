@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Table, Space} from 'antd'
+import '../styles/loan.css';
 
 function AllLoans() {
     const navigate = useNavigate();
@@ -9,6 +10,12 @@ function AllLoans() {
     function goToDetails(event){
         navigate('/loan/' + id, {replace: true})
     }
+
+    function goToForm(event){
+        navigate('/create/loan/', {replace: true})
+
+    }
+
     const columns = [
         {
             title: 'Loan ID',
@@ -39,11 +46,11 @@ function AllLoans() {
             render: (text) => <span className='font-normal'>{text}</span>
         },
         {
-            title: '',
+            title: 'Info',
             key: 'action',
             align: 'center',
             render: (text) => (
-                <a onClick={goToDetails}>Click to know more</a>
+                <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
             )
         },
         ];
@@ -71,7 +78,10 @@ function AllLoans() {
 
     return (
         <div className='home'>
-            <div className='mb-10'>Available Loans</div>
+            <div className='loan-header'>
+                <div>Available Loans</div>
+                <button className='loanbutton' onClick={goToForm}> + Create New Loan </button>
+            </div>
             <Table
                 columns= {columns}
                 dataSource= {data}
