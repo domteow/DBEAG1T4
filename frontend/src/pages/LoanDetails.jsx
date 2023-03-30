@@ -50,10 +50,10 @@ function LoanDetails() {
                     <InputText label="Loan Purpose" value= "I need money for personal business and housing"/>
                 </div>
             </div>
-
+            {location.pathname.split('/')[1] == "loan" ? 
             <button className='loanbutton'>
                 Fund the loan
-            </button>
+            </button> : <div></div>}
 		</div>
 	);
 }
