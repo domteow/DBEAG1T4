@@ -138,6 +138,47 @@ def create_loan_request():
         }
     ), 201
 
+@app.route("/loanrequest/update/<int:id>", methods=['PUT'])
+def update_loan_request(id):
+    data = request.get_json()
+    loanRequest = LoanRequest.query.get(id)
+
+    if loanRequest is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Loan request not found."
+            }
+        ), 404
+    
+    
+
+    
+    try:
+        for key, value in data.items():
+            if hasattr(loanRequest, key):
+                setattr(loanRequest, key, value)
+
+        db.session.commit()
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "loan_request_id": id
+                },
+                "message": "An error occurred updating the loan request."
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 200,
+            "data": loanRequest.json()
+        }
+    ), 200
+
+
 
 
 
