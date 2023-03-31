@@ -9,7 +9,7 @@ CORS(app)
 
 
 @app.route("/notification/sendemail", methods=['POST'])
-def sendEmail():
+def sendemail():
     data = request.get_json()
     response = invokes_tbank.invoke_sendEmail(data)
     serviceRespHeader = response.json()['Content']['ServiceResponse']['ServiceRespHeader']
