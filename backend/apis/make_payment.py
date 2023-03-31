@@ -158,7 +158,7 @@ def make_payment():
         loan_request_data['status'] = "active"
         update_loan_request = requests.put(loan_request_URL + loan_request_id, json=loan_request_data)
 
-
+    # Borrower to Lender (sends monthly installment)
     elif loan_request_data['status'] == "active":
         loan_request_data['amount_left'] -= payment_amount
 
