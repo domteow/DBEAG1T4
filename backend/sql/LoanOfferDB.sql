@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS LoanOffer (
     );
 
 INSERT INTO LoanOffer (loan_request_id, borrower_id, lender_id)
-VALUES (1, 1, 2), (2, 2, 1);
+VALUES (1, "domteow", "brunogoh"), (2, "brunogoh", "domteow");

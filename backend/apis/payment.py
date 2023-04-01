@@ -36,7 +36,7 @@ def creditTransfer():
             {
                 "code": 500,
                 "data": {},
-                'message': serviceRespHeader['ErrorText']
+                'message': "tbankAPI response" + serviceRespHeader['ErrorText']
             } 
        )
 

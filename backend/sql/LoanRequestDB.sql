@@ -23,4 +23,4 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     );
 
 INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason,borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num)
-VALUES (10000, "1", NULL, 5.5, NULL, "2024-03-01", "request", NULL, "because", "Kevlin", "Singapore", "Student", "Retail", "12345"), (5000, "1", NULL, 6.2, NULL, "2023-06-01", "request", NULL, "because", "Dom", "Singapore", "Student", "Retail", "54321");
+VALUES (10000, "1", NULL, 5.5, NULL, "2024-03-01", "request", NULL, "because", "Kevlin", "Singapore", "Student", "Retail", "12345"), (5000, "domteow", "brunogoh", 6.2, NULL, "2023-06-01", "active", 4000, "because", "Dom", "Singapore", "Student", "Retail", "54321");

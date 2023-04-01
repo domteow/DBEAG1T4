@@ -116,7 +116,15 @@ def make_payment():
 
 
     # 4. Check if loan request is still open and valid
-    if loan_request_data['amount_left'] < payment_amount:
+    if  loan_request_data['amount_left'] == None or loan_request_data['amount_left'] <= 0:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {},
+                'message': 'Amount is 0 or negative or null'
+            } 
+        )
+    elif loan_request_data['amount_left'] < payment_amount:
         return jsonify(
             {
                 "code": 500,
@@ -125,7 +133,7 @@ def make_payment():
             } 
         )
     
-    elif loan_request_data['amount_left'] <= 0 :
+    if loan_request_data['amount_left'] <= 0 :
         return jsonify(
             {
                 "code": 500,
@@ -178,7 +186,7 @@ def make_payment():
         loan_request_data['lender_id'] = payer_id
         monthly_installment = calculate_monthly_installment(payment_amount, loan_request_data['interest_rate'], loan_request_data['maturity_date'])
         loan_request_data['monthly_installment'] = monthly_installment
-        loan_request_data['amount_left'] = loan_request_data['loan_amount']
+        loan_request_data['amount_left'] = loan_request_data['principal']
         loan_request_data['status'] = "active"
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
         if 300 >= update_loan_request.json()['code'] >= 200:
@@ -214,7 +222,8 @@ def make_payment():
                     {
                         "code": 500,
                         "data": payment_response.json(),
-                        'message': 'Failed to make payment'
+                        'message': 'Failed to make payment',
+                        "request" : payment_requestObj
                     } 
                 )
         else:

@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS CreditScore (
 );
 
 INSERT INTO CreditScore (user_id, credit_score)
-VALUES (1, 750), (2, 600), (3, 800);
+VALUES ("domteow", 750), ("kelvinyap", 600), ("brunogoh", 800);
