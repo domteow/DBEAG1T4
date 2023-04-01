@@ -6,16 +6,16 @@ from os import environ
 
 import requests
 import json
-from datetime import datetime
+import datetime
 
 app = Flask(__name__)
 CORS(app)
 
 payment_URL = environ.get('payment_URL') or "http://localhost:5003/payment/credittransfer" 
-transaction_URL = environ.get('transaction_URL') or "http://localhost:5004/transaction"
-customer_URL = environ.get('customer_URL') or "http://localhost:5001/customer/getaccounts"
+transaction_URL = environ.get('transaction_URL') or "http://localhost:5004/transaction/"
+customer_URL = environ.get('customer_URL') or "http://localhost:5001/customer/"
 loan_request_URL = environ.get('loan_request_URL') or "http://localhost:5006/loanrequest/get/" # + loan request id
-notification_URL = environ.get('notification_URL') or "http://localhost:5002/notification" # + sendSMS or sendemail
+notification_URL = environ.get('notification_URL') or "http://localhost:5002/notification/" # + sendSMS or sendemail
 
 @app.route("/make_payment", methods=['POST'])
 def make_payment():
@@ -29,33 +29,30 @@ def make_payment():
     """
 
     def calculate_monthly_installment(loan_amount, annual_interest_rate, maturity_date_str):
-        maturity_date = datetime.strptime(maturity_date_str, '%Y-%m-%d')
-
-        monthly_interest_rate = annual_interest_rate / 12
-
-        n = (maturity_date.year - datetime.now().year) * 12 + (maturity_date.month - datetime.now().month)
-        
-        monthly_installment = loan_amount * (monthly_interest_rate * (1 + monthly_interest_rate) ** n) / ((1 + monthly_interest_rate) ** n - 1)
-        
-        return monthly_installment
+        maturity_date = datetime.datetime.strptime(maturity_date_str, '%Y-%m-%d')
+        n = (maturity_date.year - datetime.datetime.now().year) * 12 + (maturity_date.month - datetime.datetime.now().month)
+        r = annual_interest_rate / 12
+        M = loan_amount * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+        return M
 
 
 
-    # 1. Get payer_id, loan_request_id, payee_id, payment amt
+    # 1. Get payer_id, loan_request_id, payee account number, payment amt, interest rate
     data = request.get_json()
-    payer_id = data['Header']['userID']
-    PIN = data['Header']['PIN']
-    OTP = data['Header']['OTP']
-    payee_account_id = data['Content']['accountID']
-    loan_request_id = data['Content']['loan_request_id']
-    payment_with_commission = data['Content']['payment_amount']
+    payer_id = data['userID']
+    PIN = data['PIN']
+    OTP = data['OTP']
+    payee_account_id = data['payee_accountID']
+    loan_request_id = data['loan_request_id']
+    payment_with_commission = data['payment_amount']
+    annual_interest_rate = data['annual_interest_rate']
     commission = payment_with_commission * 0.01
     payment_amount = payment_with_commission - commission
 
     
 
-    # 2. Get payer account id using payer id
-    payer_headerObj = {
+    # 2a. Get payer bank account id using payer id
+    account_requestObj = {
         "Header" : {
             "serviceName" : "getCustomerAccounts",
             "userID" : payer_id,
@@ -64,8 +61,8 @@ def make_payment():
         }
     }
 
-    payer_response = requests.post(customer_URL, json=payer_headerObj)
-    if 300 > payer_response.json()['code'] > 200:
+    account_response = requests.post(customer_URL + "getaccounts", json=account_requestObj)
+    if account_response.json()['code'] >= 400:
         return jsonify(
             {
                 "code": 500,
@@ -73,10 +70,34 @@ def make_payment():
                 'message': 'Failed to get payer account details'
             } 
         )
-    payer_account_details = payer_response.json()['data']['Content']['ServiceResponse']['AccountList']
+    payer_account_details = account_response.json()['data']['Content']['ServiceResponse']['AccountList']
     payer_account_id = payer_account_details["account"]["accountID"]
     payer_account_id = payer_account_id.lstrip("0")
 
+    # 2b. Get payer customer details using payer id
+
+    details_requestObj = {
+        "Header" : {
+            "serviceName" : "getCustomerDetails",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        }
+    }
+    payer_customer_details = requests.post(customer_URL + "getdetails", json=details_requestObj)
+    if payer_customer_details.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {},
+                'message': 'Failed to get payer customer details'
+            } 
+        )
+    payer_customer_details = payer_customer_details.json()['data']['Content']['ServiceResponse']['CDMCustomer']
+    payer_email = payer_customer_details['profile']['email']
+    payer_phone = payer_customer_details['phone']['countryCode'] + payer_customer_details['phone']['localNumber']
+    
+    
     # 3. get data from Loan Request DB
     loan_request_response = requests.get(loan_request_URL + loan_request_id)
 
@@ -90,6 +111,7 @@ def make_payment():
         )
     
     loan_request_data = loan_request_response.json()['data']
+
 
     # 4. Check if loan request is still open and valid
     if loan_request_data['amount_left'] < payment_amount:
@@ -138,7 +160,7 @@ def make_payment():
             }
     
     payment_response = requests.post(payment_URL, json=payment_requestObj)
-    if payment_response.json()['code'] > 300:
+    if payment_response.json()['code'] >= 400:
         return jsonify(
             {
                 "code": 500,
@@ -157,6 +179,7 @@ def make_payment():
         loan_request_data['amount_left'] = loan_request_data['loan_amount']
         loan_request_data['status'] = "active"
         update_loan_request = requests.put(loan_request_URL + loan_request_id, json=loan_request_data)
+        
 
     # Borrower to Lender (sends monthly installment)
     elif loan_request_data['status'] == "active":
@@ -167,10 +190,49 @@ def make_payment():
         update_loan_request = requests.put(loan_request_URL + loan_request_id, json=loan_request_data)
 
 
-    # 7. Send notification to payer
+    # 7a. Send email to payer
+    email_requestObj = {
+        "Header" : {
+            "serviceName" : "sendEmail",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
 
+        "Content" : {
+            "emailAddress" : payer_email,
+            "emailSubject" : "Payment Successful",
+            "emailBody" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_account_id)
+        }
+    }
+
+    email_response = requests.post(notification_URL + "sendemail", json=email_requestObj)
+
+
+    # 7b. Send sms to payer
+
+    sms_requestObj = {
+        "Header" : {
+            "serviceName" : "sendSMS",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
+
+        "Content" : {
+            "mobileNumber" : payer_phone,
+            "message" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_account_id)
+        }
+    }
+
+    sms_response = requests.post(notification_URL + "sendsms", json=sms_requestObj)
 
     # 8. Log transaction
+
+    # transaction_requestObj = {
+    #     "amount" : payment_amount,
+
+
 
 
 
@@ -194,5 +256,5 @@ def make_payment():
 
 
 if __name__ == "__main__":
-    print("This is flask " + os.path.basename(__file__) + " for making a booking...")
+    print("This is flask " + os.path.basename(__file__) + " for making a payment...")
     app.run(host="0.0.0.0", port=5300, debug=True)
