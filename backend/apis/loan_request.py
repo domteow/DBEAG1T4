@@ -138,7 +138,7 @@ def create_loan_request():
         }
     ), 201
 
-@app.route("/loanrequest/update/<int:id>", methods=['PUT'])
+@app.route("/loanrequest/update/<string:id>", methods=['PUT'])
 def update_loan_request(id):
     data = request.get_json()
     loanRequest = LoanRequest.query.get(id)

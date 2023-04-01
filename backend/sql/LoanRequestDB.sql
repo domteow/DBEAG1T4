@@ -7,8 +7,8 @@ DROP TABLE IF EXISTS LoanRequest;
 CREATE TABLE IF NOT EXISTS LoanRequest (
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     principal decimal NOT NULL,
-    borrower_id int NOT NULL,
-    lender_id int,
+    borrower_id varchar(255) NOT NULL,
+    lender_id varchar(255),
     interest_rate decimal NOT NULL,
     monthly_installment decimal,
     maturity_date varchar(20) NOT NULL,

@@ -14,7 +14,7 @@ CORS(app)
 payment_URL = environ.get('payment_URL') or "http://localhost:5003/payment/credittransfer" 
 transaction_URL = environ.get('transaction_URL') or "http://localhost:5004/transaction/"
 customer_URL = environ.get('customer_URL') or "http://localhost:5001/customer/"
-loan_request_URL = environ.get('loan_request_URL') or "http://localhost:5006/loanrequest/get/" # + loan request id
+loan_request_URL = environ.get('loan_request_URL') or "http://localhost:5006/loanrequest/" # + loan request id
 notification_URL = environ.get('notification_URL') or "http://localhost:5002/notification/" # + sendSMS or sendemail
 
 @app.route("/make_payment", methods=['POST'])
@@ -42,37 +42,39 @@ def make_payment():
     payer_id = data['userID']
     PIN = data['PIN']
     OTP = data['OTP']
+    payer_account_id = data['payer_accountID']
     payee_account_id = data['payee_accountID']
     loan_request_id = data['loan_request_id']
     payment_with_commission = data['payment_amount']
-    annual_interest_rate = data['annual_interest_rate']
+    annual_interest_rate = data['annual_interest_rate'] / 100
     commission = payment_with_commission * 0.01
     payment_amount = payment_with_commission - commission
 
     
 
     # 2a. Get payer bank account id using payer id
-    account_requestObj = {
-        "Header" : {
-            "serviceName" : "getCustomerAccounts",
-            "userID" : payer_id,
-            "PIN" : PIN,
-            "OTP" : OTP
-        }
-    }
+    # account_requestObj = {
+    #     "Header" : {
+    #         "serviceName" : "getCustomerAccounts",
+    #         "userID" : payer_id,
+    #         "PIN" : PIN,
+    #         "OTP" : OTP
+    #     }
+    # }
 
-    account_response = requests.post(customer_URL + "getaccounts", json=account_requestObj)
-    if account_response.json()['code'] >= 400:
-        return jsonify(
-            {
-                "code": 500,
-                "data": {},
-                'message': 'Failed to get payer account details'
-            } 
-        )
-    payer_account_details = account_response.json()['data']['Content']['ServiceResponse']['AccountList']
-    payer_account_id = payer_account_details["account"]["accountID"]
-    payer_account_id = payer_account_id.lstrip("0")
+    # account_response = requests.post(customer_URL + "getaccounts", json=account_requestObj)
+    # if account_response.json()['code'] >= 400:
+    #     return jsonify(
+    #         {
+    #             "code": 500,
+    #             "data": {},
+    #             'message': 'Failed to get payer account details'
+    #         } 
+    #     )
+    # payer_account_details = account_response.json()['data']['Content']['ServiceResponse']['AccountList']
+    # payer_account_details = dict(payer_account_details)
+    # payer_account_id = payer_account_details["account"]["accountID"]
+    # payer_account_id = payer_account_id.lstrip("0")
 
     # 2b. Get payer customer details using payer id
 
@@ -95,13 +97,13 @@ def make_payment():
         )
     payer_customer_details = payer_customer_details.json()['data']['Content']['ServiceResponse']['CDMCustomer']
     payer_email = payer_customer_details['profile']['email']
-    payer_phone = payer_customer_details['phone']['countryCode'] + payer_customer_details['phone']['localNumber']
+    payer_phone = str(payer_customer_details['cellphone']['countryCode']) + str(payer_customer_details['cellphone']['phoneNumber'])
     
     
     # 3. get data from Loan Request DB
-    loan_request_response = requests.get(loan_request_URL + loan_request_id)
+    loan_request_response = requests.get(loan_request_URL + "get/" + str(loan_request_id))
 
-    if 300 > loan_request_data.json()['code'] > 200:
+    if loan_request_response.json()['code'] >= 400:
         return jsonify(
             {
                 "code": 500,
@@ -159,15 +161,15 @@ def make_payment():
                 }
             }
     
-    payment_response = requests.post(payment_URL, json=payment_requestObj)
-    if payment_response.json()['code'] >= 400:
-        return jsonify(
-            {
-                "code": 500,
-                "data": payment_response.json(),
-                'message': 'Failed to make payment'
-            } 
-        )
+    # payment_response = requests.post(payment_URL, json=payment_requestObj)
+    # if payment_response.json()['code'] >= 400:
+    #     return jsonify(
+    #         {
+    #             "code": 500,
+    #             "data": payment_response.json(),
+    #             'message': 'Failed to make payment'
+    #         } 
+    #     )
     
     # 6. Edit Loan Request in DB
 
@@ -178,8 +180,25 @@ def make_payment():
         loan_request_data['monthly_installment'] = monthly_installment
         loan_request_data['amount_left'] = loan_request_data['loan_amount']
         loan_request_data['status'] = "active"
-        update_loan_request = requests.put(loan_request_URL + loan_request_id, json=loan_request_data)
-        
+        update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
+        if 300 >= update_loan_request.json()['code'] >= 200:
+            payment_response = requests.post(payment_URL, json=payment_requestObj)
+            if payment_response.json()['code'] >= 400:
+                return jsonify(
+                    {
+                        "code": 500,
+                        "data": payment_response.json(),
+                        'message': 'Failed to make payment'
+                    } 
+                )
+        else:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": update_loan_request.json(),
+                    'message': 'Failed to update loan request'
+                } 
+            )
 
     # Borrower to Lender (sends monthly installment)
     elif loan_request_data['status'] == "active":
@@ -187,8 +206,25 @@ def make_payment():
 
         if loan_request_data['amount_left'] <= 0:
             loan_request_data['status'] = "closed"
-        update_loan_request = requests.put(loan_request_URL + loan_request_id, json=loan_request_data)
-
+        update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
+        if 300 >= update_loan_request.json()['code'] >= 200:
+            payment_response = requests.post(payment_URL, json=payment_requestObj)
+            if payment_response.json()['code'] >= 400:
+                return jsonify(
+                    {
+                        "code": 500,
+                        "data": payment_response.json(),
+                        'message': 'Failed to make payment'
+                    } 
+                )
+        else:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": update_loan_request.json(),
+                    'message': 'Failed to update loan request'
+                } 
+            )
 
     # 7a. Send email to payer
     email_requestObj = {
@@ -207,7 +243,14 @@ def make_payment():
     }
 
     email_response = requests.post(notification_URL + "sendemail", json=email_requestObj)
-
+    if email_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": email_response.json(),
+                'message': 'Failed to send email'
+            } 
+        )
 
     # 7b. Send sms to payer
 
@@ -225,7 +268,16 @@ def make_payment():
         }
     }
 
-    sms_response = requests.post(notification_URL + "sendsms", json=sms_requestObj)
+    sms_response = requests.post(notification_URL + "sendSMS", json=sms_requestObj)
+    if sms_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": sms_response.json(),
+                'message': 'Failed to send sms',
+                'phone': payer_phone
+            } 
+        )
 
     # 8. Log transaction
 
