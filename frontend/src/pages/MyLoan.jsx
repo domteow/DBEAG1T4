@@ -71,18 +71,21 @@ function MyLoan() {
             name: 'John Brown',
             loanAmt: 32000,
             loanTerms: '2 years',
+            repaymentAmount: 1500,
         },
         {
             loanId: '2',
             name: 'Jim Green',
             loanAmt: 42000,
             loanTerms: '2 years',
+            repaymentAmount: 2000,
         },
         {
             loanId: '3',
             name: 'Joe Black',
             loanAmt: 32000,
             loanTerms: '4 years',
+            repaymentAmount: 1500,
         },
         ];
 
@@ -122,6 +125,13 @@ function MyLoan() {
                 render: (text) => (
                     <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
                 )
+            },
+            {
+                title: 'Repayment Amount',
+                key: 'repaymentAmount',
+                dataIndex: 'repaymentAmount',
+                align: 'center',
+                render: (text) => <span className='font-normal'>{text}</span>
             },
             // {Change Pay visibility, person==loaner, show repayment button}
             {
