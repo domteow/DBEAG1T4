@@ -184,10 +184,17 @@ def make_payment():
     # Lender to Borrower (sends full principal amount)
     if loan_request_data['status'] == "request":
         loan_request_data['lender_id'] = payer_id
+
+        transaction_lender = payer_id
+        transaction_borrower = loan_request_data['borrower_id']
+        transaction_reason = "Start of Loan"
+
         monthly_installment = calculate_monthly_installment(payment_amount, loan_request_data['interest_rate'], loan_request_data['maturity_date'])
+        
         loan_request_data['monthly_installment'] = monthly_installment
         loan_request_data['amount_left'] = loan_request_data['principal']
         loan_request_data['status'] = "active"
+        
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
         if 300 >= update_loan_request.json()['code'] >= 200:
             payment_response = requests.post(payment_URL, json=payment_requestObj)
@@ -208,13 +215,21 @@ def make_payment():
                 } 
             )
 
-    # Borrower to Lender (sends monthly installment)
+    # Borrower to Lender (repayment)
     elif loan_request_data['status'] == "active":
         loan_request_data['amount_left'] -= payment_amount
 
         if loan_request_data['amount_left'] <= 0:
             loan_request_data['status'] = "closed"
+
+        transaction_borrower = payer_id
+        transaction_lender = loan_request_data['lender_id']
+        transaction_reason = "Repayment"
+
+
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
+        
+        
         if 300 >= update_loan_request.json()['code'] >= 200:
             payment_response = requests.post(payment_URL, json=payment_requestObj)
             if payment_response.json()['code'] >= 400:
@@ -290,8 +305,35 @@ def make_payment():
 
     # 8. Log transaction
 
-    # transaction_requestObj = {
-    #     "amount" : payment_amount,
+    transaction_requestObj = {
+        "amount" : payment_amount,
+        "borrower_id" : transaction_borrower,
+        "lender_id" : transaction_lender,
+        "reason" : transaction_reason,
+        "transaction_date" : datetime.datetime.now().date().strftime("%Y-%m-%d")
+
+    }
+
+    transaction_response = requests.post(transaction_URL + "create", json=transaction_requestObj)
+
+    if transaction_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": transaction_response.json(),
+                'message': 'Failed to log transaction'
+            } 
+        )
+    
+
+    return jsonify(
+        {
+            "code": 200,
+            "data": payment_response.json(),
+            'message': 'Payment successful'
+        }
+    )
+
 
 
 
