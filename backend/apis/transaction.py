@@ -21,8 +21,8 @@ class Transaction(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    borrower_id = db.Column(db.Integer, nullable=False)
-    lender_id = db.Column(db.Integer, nullable=False)
+    borrower_id = db.Column(db.String(255), nullable = False)
+    lender_id = db.Column(db.String(255), nullable = False)
     amount = db.Column(db.Float(precision=2), nullable=False)
     reason = db.Column(db.String(255), nullable=False)
     transaction_date = db.Column(db.DateTime, nullable=False)

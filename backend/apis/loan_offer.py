@@ -22,8 +22,8 @@ class LoanOffer(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     loan_request_id = db.Column(db.Integer, nullable = False)
-    borrower_id = db.Column(db.Integer, nullable = False)
-    lender_id = db.Column(db.Integer, nullable = False)
+    borrower_id = db.Column(db.String(255), nullable = False)
+    lender_id = db.Column(db.String(255), nullable = False)
 
 
     def __init__(self, loan_request_id, borrower_id, lender_id):

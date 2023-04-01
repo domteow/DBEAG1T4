@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS CreditScore;
 
 CREATE TABLE IF NOT EXISTS CreditScore (
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    user_id int NOT NULL,
+    user_id varchar(255) NOT NULL,
     credit_score int NOT NULL
     
 );

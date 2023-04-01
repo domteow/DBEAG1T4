@@ -22,15 +22,21 @@ class LoanRequest(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     principal = db.Column(db.Float(precision=2), nullable=False)
-    borrower_id = db.Column(db.Integer, nullable = False)
-    lender_id = db.Column(db.Integer)
+    borrower_id = db.Column(db.String(255), nullable = False)
+    lender_id = db.Column(db.String(255))
     interest_rate = db.Column(db.Float(precision=2), nullable=False)
     monthly_installment = db.Column(db.Float(precision=2))
     maturity_date = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False)
     amount_left = db.Column(db.Float(precision=2))
+    reason  = db.Column(db.String(255), nullable = False)
+    borrower_name = db.Column(db.String(255), nullable = False)
+    borrower_nationality = db.Column(db.String(255), nullable = False)
+    borrower_occupation = db.Column(db.String(255), nullable = False)
+    borrower_type = db.Column(db.String(255), nullable = False)
+    borrower_account_num = db.Column(db.String(255), nullable = False)
 
-    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left):
+    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num,):
         self.principal = principal
         self.borrower_id = borrower_id
         self.lender_id = lender_id
@@ -39,6 +45,12 @@ class LoanRequest(db.Model):
         self.maturity_date = maturity_date
         self.status = status
         self.amount_left = amount_left
+        self.reason = reason
+        self.borrower_name = borrower_name
+        self.borrower_nationality = borrower_nationality
+        self.borrower_occupation = borrower_occupation
+        self.borrower_type = borrower_type
+        self.borrower_account_num = borrower_account_num
         
 
     def json(self):
@@ -51,7 +63,13 @@ class LoanRequest(db.Model):
             "monthly_installment": self.monthly_installment,
             "maturity_date": self.maturity_date,
             "status": self.status,
-            "amount_left": self.amount_left
+            "amount_left": self.amount_left,
+            "reason": self.reason,
+            "borrower_name": self.borrower_name,
+            "borrower_nationality": self.borrower_nationality,
+            "borrower_occupation": self.borrower_occupation,
+            "borrower_type": self.borrower_type,
+            "borrower_account_num": self.borrower_account_num
             }
 
 @app.route("/loanrequest/getall")
@@ -177,9 +195,6 @@ def update_loan_request(id):
             "data": loanRequest.json()
         }
     ), 200
-
-
-
 
 
 if __name__ == '__main__':

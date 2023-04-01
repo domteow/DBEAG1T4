@@ -21,7 +21,7 @@ class CreditScore(db.Model):
     __tablename__ = 'creditscore'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.String(255), nullable = False)
     credit_score = db.Column(db.Integer, nullable = False)
     
 
@@ -70,16 +70,14 @@ def find_by_credit_score_id(creditscore_id):
     ), 404
 
 
-@app.route("/creditscore/user/getall/<string:userid>")
+@app.route("/creditscore/user/get/<string:userid>")
 def user_get_all(userid):
-    creditScoreList = CreditScore.query.filter_by(user_id=userid).all()
-    if len(creditScoreList):
+    creditScore = CreditScore.query.filter_by(user_id=userid).first()
+    if creditScore:
         return jsonify(
             {
                 "code": 200,
-                "data": {
-                    "credit_scores": [creditScore.json() for creditScore in creditScoreList]
-                }
+                "data": creditScore.json()
             }
         )
     return jsonify(

@@ -1,0 +1,1 @@
+db.Column(db.String(255), nullable = False)
