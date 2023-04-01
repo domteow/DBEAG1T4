@@ -13,8 +13,14 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     monthly_installment decimal,
     maturity_date varchar(20) NOT NULL,
     status varchar(20) NOT NULL,
-    amount_left decimal
+    amount_left decimal,
+    reason varchar(255) NOT NULL,
+    borrower_name varchar(255) NOT NULL,
+    borrower_nationality varchar(255) NOT NULL,
+    borrower_occupation varchar(255) NOT NULL,
+    borrower_type varchar(255) NOT NULL,
+    borrower_account_num varchar(255)
     );
 
-INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left)
-VALUES (10000, 1, NULL, 5.5, NULL, "2024-03-01", "request", NULL), (5000, 2, NULL, 6.2, NULL, "2023-06-01", "request", NULL);
+INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason,borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num)
+VALUES (10000, "1", NULL, 5.5, NULL, "2024-03-01", "request", NULL, "because", "Kevlin", "Singapore", "Student", "Retail", "12345"), (5000, "1", NULL, 6.2, NULL, "2023-06-01", "request", NULL, "because", "Dom", "Singapore", "Student", "Retail", "54321");
