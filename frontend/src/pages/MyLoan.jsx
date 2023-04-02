@@ -6,9 +6,9 @@ import {XCircleIcon} from '@heroicons/react/20/solid';
 
 function MyLoan() {
     const navigate = useNavigate();
-    const id = 1;
 
     function goToDetails(event){
+        const id = event.currentTarget.id;
         navigate('/myloan/' + id, {replace: true})
     }
     function makePayment(event){
@@ -48,8 +48,8 @@ function MyLoan() {
             title: 'Info',
             key: 'action',
             align: 'center',
-            render: (text) => (
-                <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
+            render: (text, record, index) => (
+                <a id={record.loanId} onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
             )
         },
         {
@@ -67,21 +67,21 @@ function MyLoan() {
 
         const data = [
         {
-            loanId: '1',
+            loanId: '8',
             name: 'John Brown',
             loanAmt: 32000,
             loanTerms: '2 years',
             repaymentAmount: 1500,
         },
         {
-            loanId: '2',
+            loanId: '8',
             name: 'Jim Green',
             loanAmt: 42000,
             loanTerms: '2 years',
             repaymentAmount: 2000,
         },
         {
-            loanId: '3',
+            loanId: '9',
             name: 'Joe Black',
             loanAmt: 32000,
             loanTerms: '4 years',
@@ -122,8 +122,8 @@ function MyLoan() {
                 title: 'Info',
                 key: 'action',
                 align: 'center',
-                render: (text) => (
-                    <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
+                render: (text, record) => (
+                    <a id={record.loanId} onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
                 )
             },
             {

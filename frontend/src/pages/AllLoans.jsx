@@ -1,13 +1,43 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Table, Space} from 'antd'
+import {Table, Spin} from 'antd'
 import '../styles/loan.css';
 
 function AllLoans() {
     const navigate = useNavigate();
-    const id = 1;
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const getAllLoansURL = "http://localhost:5400/view_all_loan_request"
+        const req = fetch(
+            getAllLoansURL
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            const tableData = []
+            const allData = data['data']['all_loan_requests']
+            allData.forEach((data)  => {
+                const loanData = {
+                    loanId: data["loan_request_id"],
+                    name: data["borrower_name"],
+                    loanAmt: data["principal"],
+                    loanTerms: data["loanTerm"]
+                }
+                tableData.push(loanData);
+            })
+
+            setData(tableData);
+            setLoading(false);
+            console.log(tableData)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+    },data)
 
     function goToDetails(event){
+        const id = event.currentTarget.id
         navigate('/loan/' + id, {replace: true})
     }
 
@@ -49,32 +79,12 @@ function AllLoans() {
             title: 'Info',
             key: 'action',
             align: 'center',
-            render: (text) => (
-                <a onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
+            render: (text, record,index) => (
+                <a id={record.loanId} onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
             )
         },
         ];
 
-        const data = [
-        {
-            loanId: '1',
-            name: 'John Brown',
-            loanAmt: 32000,
-            loanTerms: '2 years',
-        },
-        {
-            loanId: '2',
-            name: 'Jim Green',
-            loanAmt: 42000,
-            loanTerms: '2 years',
-        },
-        {
-            loanId: '3',
-            name: 'Joe Black',
-            loanAmt: 32000,
-            loanTerms: '4 years',
-        },
-        ];
 
     return (
         <div className='home'>
@@ -82,12 +92,13 @@ function AllLoans() {
                 <div>Available Loans</div>
                 <button className='loanbutton' onClick={goToForm}> + Create New Loan </button>
             </div>
+            { loading === true ? <Spin style={{"width":"1000px","margin":"auto", "color": "white"}} tip="Loading"></Spin> : 
             <Table
                 columns= {columns}
                 dataSource= {data}
                 pagination={false}
                 footer={() => ''}>
-            </Table>
+            </Table>}
         </div>
     )
     }

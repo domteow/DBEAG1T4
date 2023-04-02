@@ -10,20 +10,24 @@ function LoanDetails() {
     const navigate = useNavigate();
     const location = useLocation();
     const [loanInfo, setLoanInfo] = useState({});
+    const [error, setError] = useState("")
+    const id = 1;
 
     useEffect(() => {
-        const loanInformation = {
-                loanId: "1001100",
-                loanAmt: 6000,
-                loanInterestAmt: 100,
-                loanPeriod: "30/3/2023 - 1/5/2023",
-                loanRate: 5,
-                loanRepaymentAmt: 100,
-                loanRepaymentPeriod: 6,
-                loanPurpose: "Hello World, I am here due to my need to fundraise for my oversea studies."
-            };
-
-        setLoanInfo(loanInformation)
+        const id = location.pathname.split('/')[2]
+        const loanInformationURL = "http://127.0.0.1:5006/loanrequest/get/" + id
+        const req = fetch(
+            loanInformationURL
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            const tableData = data["data"]
+            setLoanInfo(tableData);
+            console.log(tableData)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     },loanInfo);
 
     function back_button() {
@@ -34,6 +38,35 @@ function LoanDetails() {
             navigate('/myloan')
         }
     }
+
+    function fundLoan(){
+        const fundInformation = {
+            "loan_request_id": loanInfo['loan_request_id'],
+            "borrower_id": loanInfo['borrower_id'],
+            "lender_id": '2'
+        }
+
+        const fundLoanURL = 'http://localhost:5007/loanrequest/create'
+        const res = fetch(
+            fundLoanURL,
+            {   method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify(fundInformation)})
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setError("")
+                navigate("/myloan")
+            })
+            .catch((error) => {
+                setError("An error happen when creating the loan")
+                console.log(error)
+            })
+
+    }
     return (
 		<div className='home'>
             <div className='mb-10 text-sm font-thin cursor-default' onClick={back_button}>
@@ -42,7 +75,13 @@ function LoanDetails() {
             </div>
             
             <div className='loandetail'>
-                <PersonalDetails />
+                <PersonalDetails 
+                    name= {loanInfo['borrower_name']} 
+                    creditScore= "A"
+                    nationality= {loanInfo['borrower_nationality']}
+                    occupation= {loanInfo['borrower_occupation']}
+                    type= {loanInfo['borrower_type']}
+                />
             </div>
 
             <div className='loandetail'>
@@ -50,19 +89,18 @@ function LoanDetails() {
                     Loan Details
                 </div>
                 <div className='loaninfo grid-cols-3'> 
-                    <InputText label="Loan ID" value= {loanInfo['loanId']}/>
+                    <InputText label="Loan ID" value= {loanInfo['loan_request_id']}/>
                     <InputText label="Loan Term" value= {loanInfo['loanTerm'] + " months"}/>
-                    <InputText label="Loan Period" value= {loanInfo['loanPeriod']} />
-                    <InputText label="Loan Amount" value= {"SGD $" + loanInfo['loanAmt']} />
-                    <InputText label="Interest Rate" value= {loanInfo['loanRate'] + " %"}/>
-                    <InputText label="Repayment Amount" value= {loanInfo['loanRepaymentAmt']} />
+                    <InputText label="Loan Period" value= {loanInfo['maturity_date']} />
+                    <InputText label="Loan Amount" value= {"SGD $" + loanInfo['principal']} />
+                    <InputText label="Interest Rate" value= {loanInfo['interest_rate'] + " %"}/>
+                    <InputText label="Repayment Amount" value= {loanInfo['monthly_installment']} />
                     <InputText label="Repayment Period" value= {loanInfo['loanRepaymentPeriod'] + " months"}/>
-                    <InputText label="Total Interest Amount" value= {"SGD $" + loanInfo['loanInterestAmt']}/>
-                    <InputText label="Loan Purpose" value= {loanInfo['loanPurpose']}/>
+                    <InputText label="Loan Purpose" value= {loanInfo['reason']}/>
                 </div> 
             </div>
             {location.pathname.split('/')[1] == "loan" ? 
-            <button className='loanbutton-details'>
+            <button className='loanbutton-details' onClick={fundLoan}>
                 Fund the loan
             </button> : <div></div>}
 		</div>
