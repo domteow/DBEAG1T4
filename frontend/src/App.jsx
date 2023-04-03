@@ -20,9 +20,9 @@ function App() {
 				<Route
 					path='/'
 					element={
-						// <RequireAuth>
+						<RequireAuth>
 							<SideNavLayout />
-						// </RequireAuth>
+						</RequireAuth>
 					}
 				>
 					<Route path='home' element={<Home />}></Route>

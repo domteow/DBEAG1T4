@@ -52,7 +52,7 @@ function SideNav() {
 				<UserCircleIcon className='h-10 w-10 text-white' />
 				<div>
 					<p className='font-bold'>
-						{/* {user.givenName} {user.familyName} */}
+						{user.givenName} {user.familyName}
 					</p>
 				</div>
 				<button className='bg-card' onClick={() => auth.logout()}>

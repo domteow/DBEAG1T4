@@ -12,21 +12,21 @@ function Login() {
 
 	const auth = useAuth();
 
-	// async function handleLogin(event) {
-	// 	event.preventDefault();
-	// 	await auth
-	// 		.login(username.current.value, password.current.value)
-	// 		.then((response) => {
-	// 			if (!response) {
-	// 			} else {
-	// 				setTimeout(() => navigate('/home', { replace: true }), 1);
-	// 			}
-	// 		});
-	// }
-
-	function handleLogin(){
-		navigate('/home')
+	async function handleLogin(event) {
+		event.preventDefault();
+		await auth
+			.login(username.current.value, password.current.value)
+			.then((response) => {
+				if (!response) {
+				} else {
+					setTimeout(() => navigate('/home', { replace: true }), 1);
+				}
+			});
 	}
+
+	// function handleLogin(){
+	// 	navigate('/home')
+	// }
 
 	return (
 		<div className='login'>

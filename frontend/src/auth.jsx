@@ -40,6 +40,14 @@ export function AuthProvider({ children }) {
 						'user',
 						JSON.stringify(data.data.Content.ServiceResponse.CDMCustomer)
 					);
+					localStorage.setItem(
+						'username',
+						username
+					)
+					localStorage.setItem(
+						'pin',
+						password
+					)
 					return true;
 				}
 			});
