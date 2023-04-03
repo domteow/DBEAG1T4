@@ -8,9 +8,9 @@ import invokes_tbank
 app = Flask(__name__)
 
 if platform.system() == "Windows":
-    db_url = 'mysql+mysqlconnector://root@localhost:3306/LoanRequestDB'
+    db_url = 'mysql+mysqlconnector://root@localhost:3306/LoanOfferDB'
 elif platform.system() == "Darwin": # for macOS
-    db_url = 'mysql+mysqlconnector://root:root@localhost:3306/LoanRequestDB'
+    db_url = 'mysql+mysqlconnector://root:root@localhost:3306/LoanOfferDB'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or  db_url
 

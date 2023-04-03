@@ -11,7 +11,10 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     lender_id varchar(255),
     interest_rate decimal NOT NULL,
     monthly_installment decimal,
-    maturity_date varchar(20) NOT NULL,
+    start_date varchar(20),
+    maturity_date varchar(20),
+    loan_term varchar(20),
+    repayment_period varchar(20,)
     status varchar(20) NOT NULL,
     amount_left decimal,
     reason varchar(255) NOT NULL,

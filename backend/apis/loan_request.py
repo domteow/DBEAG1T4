@@ -26,7 +26,10 @@ class LoanRequest(db.Model):
     lender_id = db.Column(db.String(255))
     interest_rate = db.Column(db.Float(precision=2), nullable=False)
     monthly_installment = db.Column(db.Float(precision=2))
+    start_date = db.Column(db.String(20), nullable=False)
     maturity_date = db.Column(db.String(20), nullable=False)
+    loan_term = db.Column(db.String(20), nullable=False)
+    repayment_period = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False)
     amount_left = db.Column(db.Float(precision=2))
     reason  = db.Column(db.String(255), nullable = False)
@@ -36,13 +39,16 @@ class LoanRequest(db.Model):
     borrower_type = db.Column(db.String(255), nullable = False)
     borrower_account_num = db.Column(db.String(255), nullable = False)
 
-    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num,):
+    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, start_date, maturity_date, loan_term, repayment_period, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num,):
         self.principal = principal
         self.borrower_id = borrower_id
         self.lender_id = lender_id
         self.interest_rate = interest_rate
         self.monthly_installment = monthly_installment
+        self.start_date = start_date
         self.maturity_date = maturity_date
+        self.loan_term = loan_term
+        self.repayment_period = repayment_period
         self.status = status
         self.amount_left = amount_left
         self.reason = reason
@@ -61,7 +67,10 @@ class LoanRequest(db.Model):
             "lender_id": self.lender_id,
             "interest_rate": self.interest_rate,
             "monthly_installment": self.monthly_installment,
+            "start_date": self.start_date,
             "maturity_date": self.maturity_date,
+            "loan_term": self.loan_term,
+            "repayment_period": self.repayment_period,
             "status": self.status,
             "amount_left": self.amount_left,
             "reason": self.reason,
