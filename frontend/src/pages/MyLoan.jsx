@@ -1,15 +1,14 @@
 import React, {useEffect, useState}  from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Table, Space} from 'antd';
-import {CheckCircleIcon} from '@heroicons/react/20/solid';
-import {XCircleIcon} from '@heroicons/react/20/solid';
+import {Table, Spin} from 'antd';
 
 function MyLoan() {
     const navigate = useNavigate();
-    const [listOfLendersData, setListOfLendersData] = useState([]);
     const [listOfConfirmedLoansData, setListOfConfirmedLoansData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const id = "domteow";
+    const [loading, setLoading] = useState(false);
+    const id = localStorage.getItem('username')
+    const userPIN = JSON.parse(localStorage.getItem('pin'))
+    // const id = "domteow";
 
     function goToDetails(event){
         const id = event.currentTarget.id;
@@ -18,75 +17,45 @@ function MyLoan() {
     function makeRepayment(event){
         // send repayment calculation here
         console.log("Make repayment")
-        console.log(event)
+        const loan_request_id = event.currentTarget.id;
+        // console.log(loan_request_id)
+        const specific_loan_request = listOfConfirmedLoansData.filter(item => item['loan_request_id'] == loan_request_id)[0]
+        // console.log(specific_loan_request)
+        const data = {
+            "userID": id,
+            "PIN": userPIN,
+            "OTP": "999999",
+            "payer_accountID": specific_loan_request['borrower_account_num'],
+            "payee_accountID": specific_loan_request['lender_account_num'],
+            "loan_request_id": loan_request_id,
+            "commission": specific_loan_request['monthly_installment'] * 0.01,
+            "payment_amount": specific_loan_request['monthly_installment'],
+            "payer_name": specific_loan_request["borrower_name"],
+            "payer_nationality": specific_loan_request["borrower_nationality"],
+            "payer_occupation": specific_loan_request["borrower_occupation"],
+            "payer_type": specific_loan_request["borrower_type"]
+        };
+        console.log(data)
+        const makePaymentURL = "http://localhost:5300/make_payment"
+        const req = fetch(
+            makePaymentURL,
+            {
+                method: "POST",
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify(data)
+            }
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     }
-    // function acceptLoanOffer(event){
-    //     // after accepting loanOffer
-    //     console.log("make transfer of loan here")
-    //     // Remove all other loanOffers from different lenders and notify them
-    //     // Remove THIS loanOffer and notify lender of successful loan + payment of loan
-    //     // Make initial payment from lender to borrower
-    // }
-    // function denyLoanOffer(event){
-    //     //  after rejecting loanOffer
-    //     console.log("remove and notify of rejection")
-    //     // Remove THIS loanOffer and notify the lender of the rejection
-    // }
-    // To fill List of Lenders Table
-    // useEffect(() => {
-
-    //     const getAllLoanOffersURL = "http://localhost:5007/loanoffer/getallborrowerid/" + id
-    //     const req = fetch(
-    //         getAllLoanOffersURL
-    //     )
-    //     .then( (response) => response.json())
-    //     .then(async (data) => {
-    //         const tableData = []
-    //         const allData = data['data']['loan_offerss']
-    //         await allData.forEach(async (data)  => {
-    //             const getLoanInfo = "http://localhost:5006/loanrequest/get/" + data['loan_request_id']
-    //             const req1 = await fetch(
-    //                 getLoanInfo
-    //             )
-    //             .then( async (response) => await response.json())
-    //             .then(async (data2) =>  {
-    //                 // console.log(data2['data'])
-    //                 const loanData = {
-    //                     // get information of LENDER (person lending the money)
-    
-    //                     // ID of the loan
-    //                     loanId: data["loan_request_id"],
-    //                     // Name of LENDER
-    //                     name: data["lender_id"],
-    //                     loanAmt: data2['data']["principal"],
-    //                     loanTerms: data2['data']["loanTerm"]
-    //                 }
-
-    //                 if (!tableData.includes(loanData)) {
-    //                     tableData.push(loanData)
-    //                     // setListOfLendersData(oldArr => [...oldArr,loanData])
-    //                 }
-    //                 // tableData.push(loanData);
-    //             })
-    //             ifone:
-    //                 if (tableData.length == allData.length) {
-    //                     console.log(tableData)
-    //                     if (JSON.stringify(tableData) == JSON.stringify(listOfLendersData)) {
-    //                         break ifone
-    //                     }
-    //                     setListOfLendersData(tableData);
-    //                     setLoading(false);
-    //                 }
-    //             // setListOfLendersData(tableData);
-    //             // setLoading(false);
-                
-    //         })
-    //         // console.log(tableData)
-    //     })
-    //     .catch((error) => {
-    //         console.log(error)
-    //     })
-    // },listOfLendersData)
 
     // To fill Confirmed Loans Table
     useEffect(() => {
@@ -103,13 +72,6 @@ function MyLoan() {
             allData.forEach( (data)  => {
                 if (data['status'] == "active" & (data['borrower_id'] == id || data['lender_id'] == id)) {
                     data['isLender'] = data['lender_id'] == id ? true : false
-                    // const loanData = {
-                    //     loanId: data["loan_request_id"],
-                    //     name: data["borrower_name"],
-                    //     loanAmt: data["principal"],
-                    //     loanTerms: data["loanTerm"],
-                    //     isLender: data['lender_id'] == id ? true : false,
-                    // }
                     tableData.push(data);
                 }
             })
@@ -117,7 +79,7 @@ function MyLoan() {
             console.log(listOfConfirmedLoansData)
             if (JSON.stringify(tableData) !=  JSON.stringify(listOfConfirmedLoansData)) {
                 setListOfConfirmedLoansData(tableData);
-                setLoading(false);
+                // setLoading(false);
             }
         })
         .catch((error) => {
@@ -125,8 +87,6 @@ function MyLoan() {
         })
     },listOfConfirmedLoansData)
 
-
-    // const columns_list_of_lenders = [
     //     {
     //         title: 'Loan ID',
     //         dataIndex: 'loanId',
@@ -198,13 +158,13 @@ function MyLoan() {
                 align: 'center',
                 render: (text) => <span className='font-normal'>{text}</span>
             },
-            {
-                title: 'Loan Terms',
-                key: 'loan_term',
-                dataIndex: 'loan_term',
-                align: 'center',
-                render: (text) => <span className='font-normal'>{text}</span>
-            },
+            // {
+            //     title: 'Loan Terms',
+            //     key: 'loan_term',
+            //     dataIndex: 'loan_term',
+            //     align: 'center',
+            //     render: (text) => <span className='font-normal'>{text}</span>
+            // },
             {
                 title: 'Info',
                 key: 'action',
@@ -220,15 +180,22 @@ function MyLoan() {
                 align: 'center',
                 render: (text) => <span className='font-normal'>{text}</span>
             },
-            // {Change Pay visibility, person==loaner, show repayment button}
+            {
+                title: 'Next Repayment Date',
+                key: 'date_of_next_repayment',
+                dataIndex: 'date_of_next_repayment',
+                align: 'center',
+                render: (text) => <span className='font-normal'>{text}</span>
+            },
             {
                 title: 'Repayment',
                 key: 'action',
                 dataIndex: 'isLender',
                 align: 'center',
-                render: (text) => (
+                render: (text, record) => (
                     <button 
                     hidden={text}
+                    id={record.loan_request_id}
                     onClick={makeRepayment}
                     className='bg-green-500	rounded-full p-4 px-7'>Pay</button>
                 )
@@ -238,22 +205,15 @@ function MyLoan() {
     return (
         <div className='home'>
             <div className='mb-10'>My Loans</div>
-            {/* {If person==borrower, show table "List of Lenders"} */}
-            {/* <div className='text-lg mb-2'>List of Lenders</div>
-            <Table
-                columns= {columns_list_of_lenders}
-                dataSource= {listOfLendersData}
-                pagination={false}
-                footer={() => ''}>
-            </Table>
-            <br></br> */}
             <div className='text-lg mb-2'>Confirmed Loans</div>
+            { loading === true ? <Spin style={{"width":"1000px","margin":"auto", "color": "white"}} tip="Loading"></Spin> : 
             <Table
                 columns= {columns_confirmed_loans}
                 dataSource= {listOfConfirmedLoansData}
                 pagination={false}
                 footer={() => ''}>
             </Table>
+            }
         </div>
     )
     }
