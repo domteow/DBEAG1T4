@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     monthly_installment decimal,
     start_date varchar(20),
     maturity_date varchar(20),
+    date_of_next_repayment varchar(20),
     loan_term varchar(20),
     repayment_period varchar(20,)
     status varchar(20) NOT NULL,
@@ -22,7 +23,12 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     borrower_nationality varchar(255) NOT NULL,
     borrower_occupation varchar(255) NOT NULL,
     borrower_type varchar(255) NOT NULL,
-    borrower_account_num varchar(255)
+    borrower_account_num varchar(255) NOT NULL,
+    lender_name varchar(255) NOT NULL,
+    lender_nationality varchar(255) NOT NULL,
+    lender_occupation varchar(255) NOT NULL,
+    lender_type varchar(255) NOT NULL,
+    lender_account_num varchar(255) NOT NULL,
     );
 
 INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason,borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num)

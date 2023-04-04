@@ -28,6 +28,7 @@ class LoanRequest(db.Model):
     monthly_installment = db.Column(db.Float(precision=2))
     start_date = db.Column(db.String(20), nullable=False)
     maturity_date = db.Column(db.String(20), nullable=False)
+    date_of_next_repayment = db.Column(db.String(20), nullable=False)
     loan_term = db.Column(db.String(20), nullable=False)
     repayment_period = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), nullable=False)
@@ -38,8 +39,13 @@ class LoanRequest(db.Model):
     borrower_occupation = db.Column(db.String(255), nullable = False)
     borrower_type = db.Column(db.String(255), nullable = False)
     borrower_account_num = db.Column(db.String(255), nullable = False)
+    lender_name = db.Column(db.String(255), nullable = False)
+    lender_nationality = db.Column(db.String(255), nullable = False)
+    lender_occupation = db.Column(db.String(255), nullable = False)
+    lender_type = db.Column(db.String(255), nullable = False)
+    lender_account_num = db.Column(db.String(255), nullable = False)
 
-    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, start_date, maturity_date, loan_term, repayment_period, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num,):
+    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, start_date, maturity_date, date_of_next_repayment, loan_term, repayment_period, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num, lender_name, lender_nationality, lender_occupation, lender_type, lender_account_num,):
         self.principal = principal
         self.borrower_id = borrower_id
         self.lender_id = lender_id
@@ -47,6 +53,7 @@ class LoanRequest(db.Model):
         self.monthly_installment = monthly_installment
         self.start_date = start_date
         self.maturity_date = maturity_date
+        self.date_of_next_repayment = date_of_next_repayment
         self.loan_term = loan_term
         self.repayment_period = repayment_period
         self.status = status
@@ -57,6 +64,11 @@ class LoanRequest(db.Model):
         self.borrower_occupation = borrower_occupation
         self.borrower_type = borrower_type
         self.borrower_account_num = borrower_account_num
+        self.lender_name = lender_name
+        self.lender_nationality = lender_nationality
+        self.lender_occupation = lender_occupation
+        self.lender_type = lender_type
+        self.lender_account_num = lender_account_num
         
 
     def json(self):
@@ -69,6 +81,7 @@ class LoanRequest(db.Model):
             "monthly_installment": self.monthly_installment,
             "start_date": self.start_date,
             "maturity_date": self.maturity_date,
+            "date_of_next_repayment": self.date_of_next_repayment,
             "loan_term": self.loan_term,
             "repayment_period": self.repayment_period,
             "status": self.status,
@@ -78,7 +91,12 @@ class LoanRequest(db.Model):
             "borrower_nationality": self.borrower_nationality,
             "borrower_occupation": self.borrower_occupation,
             "borrower_type": self.borrower_type,
-            "borrower_account_num": self.borrower_account_num
+            "borrower_account_num": self.borrower_account_num,
+            "lender_name": self.lender_name,
+            "lender_nationality": self.lender_nationality,
+            "lender_occupation": self.lender_occupation,
+            "lender_type": self.lender_type,
+            "lender_account_num": self.lender_account_num
             }
 
 @app.route("/loanrequest/getall")
