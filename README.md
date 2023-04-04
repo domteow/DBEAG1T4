@@ -61,7 +61,7 @@ AY2022-2023, Term 2<br>
 * Bryan Shing Wen Yan bryan.shing.2020@scis.smu.edu.sg<br>
 * Bruno Goh Jing Hang bruno.goh.2020@scis.smu.edu.sg<br>
 * Alvin<br>
-* Dominic Teow Zhen Yang<br>
+* Dominic Teow Zhen Yang dominicteow.2020@scis.smu.edu.sg<br>
 * Kelvin Yap kelvin.yap.2020@scis.smu.edu.sg
 
 ## Acknowledgement ##
