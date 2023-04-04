@@ -269,7 +269,7 @@ def make_payment():
     
     # for commission transaction
     transaction_requestObj = {
-            "amount" : payment_amount,
+            "amount" : commission,
             "payer_id" : transaction_payer,
             "payee_id" : "Jien",
             "reason" : "Commission",
