@@ -9,7 +9,7 @@ function AllLoans() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const getAllLoansURL = "http://localhost:5400/view_all_loan_request"
+        const getAllLoansURL = "http://localhost:5407/view_all_loan_request"
         const req = fetch(
             getAllLoansURL
         )
@@ -22,14 +22,13 @@ function AllLoans() {
                     loanId: data["loan_request_id"],
                     name: data["borrower_name"],
                     loanAmt: data["principal"],
-                    loanTerms: data["loanTerm"]
+                    loanTerms: data["loan_term"]
                 }
                 tableData.push(loanData);
             })
 
             setData(tableData);
             setLoading(false);
-            console.log(tableData)
         })
         .catch((error) => {
             console.log(error)
