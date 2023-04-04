@@ -35,10 +35,6 @@ Our MySQL databases are managed by phpMyAdmin. In order to create and populate t
    4. Click on "Choose File" and navigate to ```sql``` directory in the code repository.
 
       * Load the SQL scripts
-
-   5. The following message will appear if the database has been successfully imported.
-
-      ![Successful import](images/successimport.jpg)
       
 ## Running the microservices ##
  1. In your terminal, navigate to the ```backend``` folder in the code repository
