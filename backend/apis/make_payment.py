@@ -150,6 +150,8 @@ def make_payment():
         loan_request_data['amount_left'] = payment_amount
         loan_request_data['status'] = "active"
         payee_name = loan_request_data['borrower_name']
+        payee_email = loan_request_data['borrower_email']
+        payee_phone = loan_request_data['borrower_phone']
         
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
         if update_loan_request.json()['code'] >= 400:
@@ -183,6 +185,8 @@ def make_payment():
         transaction_payee = loan_request_data['lender_id']
         transaction_reason = "Repayment"
         payee_name = loan_request_data['lender_name']
+        payee_email = loan_request_data['lender_email']
+        payee_phone = loan_request_data['lender_phone']
 
 
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
@@ -267,7 +271,7 @@ def make_payment():
             {
                 "code": 500,
                 "data": email_response.json(),
-                'message': 'Failed to send email'
+                'message': 'Failed to send email to payer'
             } 
         )
 
@@ -293,10 +297,64 @@ def make_payment():
             {
                 "code": 500,
                 "data": sms_response.json(),
-                'message': 'Failed to send sms',
+                'message': 'Failed to send sms to payer',
                 'phone': payer_phone
             } 
         )
+    
+    # 7c. Send email to payee
+    email_requestObj = {
+        "Header" : {
+            "serviceName" : "sendEmail",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
+
+        "Content" : {
+            "emailAddress" : payee_email,
+            "emailSubject" : "Payment Successful",
+            "emailBody" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_account_id)
+        }
+    }
+
+    email_response = requests.post(notification_URL + "sendemail", json=email_requestObj)
+    if email_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": email_response.json(),
+                'message': 'Failed to send email to payee'
+            } 
+        )
+
+
+    # 7d. Send SMS to payee
+    sms_requestObj = {
+        "Header" : {
+            "serviceName" : "sendSMS",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
+
+        "Content" : {
+            "mobileNumber" : payee_phone,
+            "message" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_account_id)
+        }
+    }
+
+    sms_response = requests.post(notification_URL + "sendSMS", json=sms_requestObj)
+    if sms_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": sms_response.json(),
+                'message': 'Failed to send sms to payee',
+                'phone': payee_phone
+            } 
+        )
+    
 
     # 8. Log transaction
 
