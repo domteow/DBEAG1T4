@@ -169,10 +169,8 @@ def create_loan_request():
         return jsonify(
             {
                 "code": 500,
-                "data": {
-                    "loan_request_id": loanRequest.loan_request_id
-                },
-                "message": "An error occurred creating the credit score."
+                "data": {},
+                "message": "An error occurred creating the loan request."
             }
         ), 500
 
