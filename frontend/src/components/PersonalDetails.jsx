@@ -14,7 +14,7 @@ function PersonalDetails(props){
                 <InputText label="Credit Score" value={props.creditScore}/>
                 <InputText label="Nationality" value={props.nationality}/>
                 <InputText label="Occupation" value={props.occupation}/>
-                <InputText label="Customer Type" value={props.type}/>
+                <InputText label="Customer Type" value={props.type == 100 ? 'Retail' : 'Corporate'}/>
             </div>
         </div>
     )
