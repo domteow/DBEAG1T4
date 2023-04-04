@@ -28,12 +28,12 @@ def make_payment():
     -> use transaction to keep record
     """
 
-    def calculate_monthly_installment(loan_amount, annual_interest_rate, maturity_date_str):
-        maturity_date = datetime.datetime.strptime(maturity_date_str, '%Y-%m-%d')
-        n = (maturity_date.year - datetime.datetime.now().year) * 12 + (maturity_date.month - datetime.datetime.now().month)
-        r = annual_interest_rate / 12
-        M = loan_amount * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
-        return M
+    # def calculate_monthly_installment(loan_amount, annual_interest_rate, maturity_date_str):
+    #     maturity_date = datetime.datetime.strptime(maturity_date_str, '%Y-%m-%d')
+    #     n = (maturity_date.year - datetime.datetime.now().year) * 12 + (maturity_date.month - datetime.datetime.now().month)
+    #     r = annual_interest_rate / 12
+    #     M = loan_amount * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+    #     return M
 
 
 
@@ -45,38 +45,21 @@ def make_payment():
     payer_account_id = data['payer_accountID']
     payee_account_id = data['payee_accountID']
     loan_request_id = data['loan_request_id']
-    payment_with_commission = data['payment_amount']
+    # payment_with_commission = data['payment_amount']
     annual_interest_rate = data['annual_interest_rate'] / 100
-    commission = payment_with_commission * 0.01
-    payment_amount = payment_with_commission - commission
+    # commission = payment_with_commission * 0.01
+    # payment_amount = payment_with_commission - commission
+    commission = data['commission']
+    payment_amount = data['payment_amount']
 
-    
+    payer_name = data['payer_name']
+    payer_nationality = data['payer_nationality']
+    payer_occupation = data['payer_occupation']
+    payer_type = data['payer_type']
 
-    # 2a. Get payer bank account id using payer id
-    # account_requestObj = {
-    #     "Header" : {
-    #         "serviceName" : "getCustomerAccounts",
-    #         "userID" : payer_id,
-    #         "PIN" : PIN,
-    #         "OTP" : OTP
-    #     }
-    # }
 
-    # account_response = requests.post(customer_URL + "getaccounts", json=account_requestObj)
-    # if account_response.json()['code'] >= 400:
-    #     return jsonify(
-    #         {
-    #             "code": 500,
-    #             "data": {},
-    #             'message': 'Failed to get payer account details'
-    #         } 
-    #     )
-    # payer_account_details = account_response.json()['data']['Content']['ServiceResponse']['AccountList']
-    # payer_account_details = dict(payer_account_details)
-    # payer_account_id = payer_account_details["account"]["accountID"]
-    # payer_account_id = payer_account_id.lstrip("0")
 
-    # 2b. Get payer customer details using payer id
+    # 2. Get payer customer details using payer id
 
     details_requestObj = {
         "Header" : {
@@ -152,44 +135,18 @@ def make_payment():
         )
     
     
-
-    # 5. Make payment
-    payment_requestObj = {
-                "Header" : {
-                    "serviceName" : "creditTransfer",
-                    "userID" : payer_id,
-                    "PIN" : PIN,
-                    "OTP" : OTP
-                },
-
-                "Content" : {
-                    "accountFrom" : payer_account_id,
-                    "accountTo" : payee_account_id,
-                    "transactionAmount" : payment_amount
-                }
-            }
     
-    # payment_response = requests.post(payment_URL, json=payment_requestObj)
-    # if payment_response.json()['code'] >= 400:
-    #     return jsonify(
-    #         {
-    #             "code": 500,
-    #             "data": payment_response.json(),
-    #             'message': 'Failed to make payment'
-    #         } 
-    #     )
-    
-    # 6. Edit Loan Request in DB
+    # 5. Edit Loan Request in DB
 
     # Lender to Borrower (sends full principal amount)
     if loan_request_data['status'] == "request":
         loan_request_data['lender_id'] = payer_id
 
-        transaction_lender = payer_id
-        transaction_borrower = loan_request_data['borrower_id']
+        transaction_payer = payer_id
+        transaction_payee = loan_request_data['borrower_id']
         transaction_reason = "Start of Loan"
 
-        monthly_installment = calculate_monthly_installment(payment_amount, loan_request_data['interest_rate'], loan_request_data['maturity_date'])
+        # monthly_installment = calculate_monthly_installment(payment_amount, loan_request_data['interest_rate'], loan_request_data['maturity_date'])
         
         loan_request_data['monthly_installment'] = monthly_installment
         loan_request_data['amount_left'] = loan_request_data['principal']
@@ -222,8 +179,8 @@ def make_payment():
         if loan_request_data['amount_left'] <= 0:
             loan_request_data['status'] = "closed"
 
-        transaction_borrower = payer_id
-        transaction_lender = loan_request_data['lender_id']
+        transaction_payer = payer_id
+        transaction_payee = loan_request_data['lender_id']
         transaction_reason = "Repayment"
 
 
@@ -250,7 +207,7 @@ def make_payment():
                 } 
             )
 
-    # 7a. Send email to payer
+    # 6a. Send email to payer
     email_requestObj = {
         "Header" : {
             "serviceName" : "sendEmail",
@@ -276,7 +233,7 @@ def make_payment():
             } 
         )
 
-    # 7b. Send sms to payer
+    # 6b. Send sms to payer
 
     sms_requestObj = {
         "Header" : {
@@ -303,12 +260,13 @@ def make_payment():
             } 
         )
 
-    # 8. Log transaction
+    # 7. Log transaction
 
+    # for repayment/loan transaction
     transaction_requestObj = {
         "amount" : payment_amount,
-        "borrower_id" : transaction_borrower,
-        "lender_id" : transaction_lender,
+        "payer_id" : transaction_payer,
+        "payee_id" : transaction_payee,
         "reason" : transaction_reason,
         "transaction_date" : datetime.datetime.now().date().strftime("%Y-%m-%d")
 
@@ -321,11 +279,85 @@ def make_payment():
             {
                 "code": 500,
                 "data": transaction_response.json(),
-                'message': 'Failed to log transaction'
+                'message': 'Failed to log payment transaction'
+            } 
+        )
+    
+    # for commission transaction
+    transaction_requestObj = {
+            "amount" : payment_amount,
+            "payer_id" : transaction_payer,
+            "payee_id" : "Jien",
+            "reason" : "Commission",
+            "transaction_date" : datetime.datetime.now().date().strftime("%Y-%m-%d")
+
+        }
+
+    transaction_response = requests.post(transaction_URL + "create", json=transaction_requestObj)
+
+    if transaction_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": transaction_response.json(),
+                'message': 'Failed to log commission transaction'
+            } 
+        )
+
+    # 8. Make payment
+
+    # Loan/Repayment
+    payment_requestObj = {
+                "Header" : {
+                    "serviceName" : "creditTransfer",
+                    "userID" : payer_id,
+                    "PIN" : PIN,
+                    "OTP" : OTP
+                },
+
+                "Content" : {
+                    "accountFrom" : payer_account_id,
+                    "accountTo" : payee_account_id,
+                    "transactionAmount" : payment_amount
+                }
+            }
+    
+    payment_response = requests.post(payment_URL, json=payment_requestObj)
+    if payment_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": payment_response.json(),
+                'message': f'Failed to make payment to {payee_account_id}'
             } 
         )
     
 
+    # Commission
+    payment_requestObj = {
+                "Header" : {
+                    "serviceName" : "creditTransfer",
+                    "userID" : payer_id,
+                    "PIN" : PIN,
+                    "OTP" : OTP
+                },
+
+                "Content" : {
+                    "accountFrom" : payer_account_id,
+                    "accountTo" : "9997",
+                    "transactionAmount" : commission
+                }
+            }
+    
+    payment_response = requests.post(payment_URL, json=payment_requestObj)
+    if payment_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": payment_response.json(),
+                'message': f'Failed to pay commission'
+            } 
+        )
     return jsonify(
         {
             "code": 200,
