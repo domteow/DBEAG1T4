@@ -16,6 +16,7 @@ transaction_URL = environ.get('transaction_URL') or "http://localhost:5004/trans
 customer_URL = environ.get('customer_URL') or "http://localhost:5001/customer/"
 loan_request_URL = environ.get('loan_request_URL') or "http://localhost:5006/loanrequest/" # + loan request id
 notification_URL = environ.get('notification_URL') or "http://localhost:5002/notification/" # + sendSMS or sendemail
+beneficiary_URL = environ.get('beneficiary_URL') or "http://localhost:5007/beneficiary/" # + add
 
 @app.route("/make_payment", methods=['POST'])
 def make_payment():
@@ -156,6 +157,7 @@ def make_payment():
         loan_request_data['lender_account_num'] = payer_account_id
         loan_request_data['amount_left'] = loan_request_data['principal']
         loan_request_data['status'] = "active"
+        payee_name = loan_request_data['borrower_name']
         
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
         if update_loan_request.json()['code'] >= 400:
@@ -177,6 +179,7 @@ def make_payment():
         transaction_payer = payer_id
         transaction_payee = loan_request_data['lender_id']
         transaction_reason = "Repayment"
+        payee_name = loan_request_data['lender_name']
 
 
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
@@ -190,6 +193,30 @@ def make_payment():
                     'message': 'Failed to update loan request'
                 } 
             )
+        
+    # 6. Add payee to beneficiary list in tBank
+    beneficiary_requestObj = {
+        "Header" : {
+            "serviceName" : "addBeneficiary",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
+
+        "Content" : {
+            "accountID" : payee_account_id,
+            "Description" : payee_name
+        }
+    }
+    add_beneficiary_response = requests.post(beneficiary_URL + "add", json=beneficiary_requestObj)
+    if add_beneficiary_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": add_beneficiary_response.json(),
+                'message': 'Failed to add beneficiary'
+            } 
+        )
 
     # 6a. Send email to payer
     email_requestObj = {

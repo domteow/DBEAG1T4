@@ -11,9 +11,11 @@ CORS(app)
 @app.route("/beneficiary/add", methods=['POST'])
 def add_beneficiary():
     data = request.get_json()
+    print(data)
     response = invokes_tbank.invoke_addBeneficiary(data)
-
+    print(response.json())
     serviceRespHeader = response.json()['Content']['ServiceResponse']['ServiceRespHeader']
+    
     errorCode = serviceRespHeader['GlobalErrorID']
 
     if errorCode == '010000':
