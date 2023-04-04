@@ -60,9 +60,6 @@ def invoke_login_customer(headerObj):
     return response
     
         
-# invoke_login_customer("brunogjh","815405")
-
-
 ##################################################################
 ###### GET CUSTOMER DETAILS
 ##################################################################
@@ -74,7 +71,6 @@ def invoke_get_customer_details(headerObj):
     
            
 
-# invoke_get_customer_details("brunogjh","815405")
     
 ##################################################################
 ###### GET CUSTOMER EXISTING ACCOUNTS
@@ -85,7 +81,5 @@ def invoke_get_customer_accounts(headerObj):
     
     response = requests.post(final_url)
     return response
-
-# invoke_get_customer_accounts("brunogjh","815405")
-# invoke_get_customer_accounts("woofwoof","533551")    
+   
 
