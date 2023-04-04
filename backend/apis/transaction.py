@@ -21,21 +21,21 @@ class Transaction(db.Model):
     __tablename__ = 'transaction'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    borrower_id = db.Column(db.String(255), nullable = False)
-    lender_id = db.Column(db.String(255), nullable = False)
+    payer_id = db.Column(db.String(255), nullable = False)
+    payee_id = db.Column(db.String(255), nullable = False)
     amount = db.Column(db.Float(precision=2), nullable=False)
     reason = db.Column(db.String(255), nullable=False)
     transaction_date = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, borrower_id, lender_id, amount, reason, transaction_date):
-        self.borrower_id = borrower_id
-        self.lender_id = lender_id
+    def __init__(self, payer_id, payee_id, amount, reason, transaction_date):
+        self.payer_id = payer_id
+        self.payee_id = payee_id
         self.amount = amount
         self.reason = reason
         self.transaction_date = transaction_date
 
     def json(self):
-        return {"transaction_id": self.id, "borrower_id": self.borrower_id, "lender_id": self.lender_id, "amount": self.amount, "reason": self.reason, "transaction_date": self.transaction_date}
+        return {"transaction_id": self.id, "payer_id": self.payer_id, "payee_id": self.payee_id, "amount": self.amount, "reason": self.reason, "transaction_date": self.transaction_date}
 
 @app.route("/transaction/getall")
 def get_all():

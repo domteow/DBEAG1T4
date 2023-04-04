@@ -46,7 +46,7 @@ def make_payment():
     payee_account_id = data['payee_accountID']
     loan_request_id = data['loan_request_id']
     # payment_with_commission = data['payment_amount']
-    annual_interest_rate = data['annual_interest_rate'] / 100
+    # annual_interest_rate = data['annual_interest_rate'] / 100
     # commission = payment_with_commission * 0.01
     # payment_amount = payment_with_commission - commission
     commission = data['commission']
@@ -148,22 +148,17 @@ def make_payment():
 
         # monthly_installment = calculate_monthly_installment(payment_amount, loan_request_data['interest_rate'], loan_request_data['maturity_date'])
         
-        loan_request_data['monthly_installment'] = monthly_installment
+        # loan_request_data['monthly_installment'] = monthly_installment
+        loan_request_data['lender_name'] = payer_name
+        loan_request_data['lender_nationality'] = payer_nationality
+        loan_request_data['lender_occupation'] = payer_occupation
+        loan_request_data['lender_type'] = payer_type
+        loan_request_data['lender_account_num'] = payer_account_id
         loan_request_data['amount_left'] = loan_request_data['principal']
         loan_request_data['status'] = "active"
         
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
-        if 300 >= update_loan_request.json()['code'] >= 200:
-            payment_response = requests.post(payment_URL, json=payment_requestObj)
-            if payment_response.json()['code'] >= 400:
-                return jsonify(
-                    {
-                        "code": 500,
-                        "data": payment_response.json(),
-                        'message': 'Failed to make payment'
-                    } 
-                )
-        else:
+        if update_loan_request.json()['code'] >= 400:
             return jsonify(
                 {
                     "code": 500,
@@ -187,18 +182,7 @@ def make_payment():
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
         
         
-        if 300 >= update_loan_request.json()['code'] >= 200:
-            payment_response = requests.post(payment_URL, json=payment_requestObj)
-            if payment_response.json()['code'] >= 400:
-                return jsonify(
-                    {
-                        "code": 500,
-                        "data": payment_response.json(),
-                        'message': 'Failed to make payment',
-                        "request" : payment_requestObj
-                    } 
-                )
-        else:
+        if update_loan_request.json()['code'] >= 400:
             return jsonify(
                 {
                     "code": 500,
@@ -334,6 +318,7 @@ def make_payment():
     
 
     # Commission
+    commission_account_id = "9997"
     payment_requestObj = {
                 "Header" : {
                     "serviceName" : "creditTransfer",
@@ -344,7 +329,7 @@ def make_payment():
 
                 "Content" : {
                     "accountFrom" : payer_account_id,
-                    "accountTo" : "9997",
+                    "accountTo" : commission_account_id,
                     "transactionAmount" : commission
                 }
             }

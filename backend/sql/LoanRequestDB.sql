@@ -43,5 +43,5 @@ INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, month
 borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num, borrower_PIN,
 lender_name, lender_nationality, lender_occupation, lender_type, lender_account_num)
 VALUES
-(5000, "domteow", "brunogoh", 6.2, 431, "2024-04-04", "active", 5000, "scamming bruno",
+(5000, "domteow", "brunogjh", 6.2, 431, "2024-04-04", "active", 5000, "scamming bruno",
  "Dom", "Singapore", "Student", "Retail","10008", "999999", "Bruno", "Singapore", "Student", "Retail", "9998");
