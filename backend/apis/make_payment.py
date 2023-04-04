@@ -46,6 +46,7 @@ def make_payment():
     payer_account_id = data['payer_accountID']
     payee_account_id = data['payee_accountID']
     loan_request_id = data['loan_request_id']
+    # principal = data['principal']
     # payment_with_commission = data['payment_amount']
     # annual_interest_rate = data['annual_interest_rate'] / 100
     # commission = payment_with_commission * 0.01
@@ -100,29 +101,20 @@ def make_payment():
 
 
     # 4. Check if loan request is still open and valid
-    if  loan_request_data['amount_left'] == None or loan_request_data['amount_left'] <= 0:
+    if  loan_request_data['status'] == "active" and loan_request_data['amount_left'] <= 0:
         return jsonify(
             {
                 "code": 500,
                 "data": {},
-                'message': 'Amount is 0 or negative or null'
+                'message': 'Amount is 0 or negative'
             } 
         )
-    elif loan_request_data['amount_left'] < payment_amount:
+    elif loan_request_data['status'] == "active" and loan_request_data['amount_left'] < payment_amount:
         return jsonify(
             {
                 "code": 500,
                 "data": {},
                 'message': 'Payment amount is more than amount left'
-            } 
-        )
-    
-    if loan_request_data['amount_left'] <= 0 :
-        return jsonify(
-            {
-                "code": 500,
-                "data": {},
-                'message': 'Amount is 0 or negative or null'
             } 
         )
     
@@ -139,7 +131,7 @@ def make_payment():
     
     # 5. Edit Loan Request in DB
 
-    # Lender to Borrower (sends full principal amount)
+    # Lender to Borrower (sends full principal amount + interest)
     if loan_request_data['status'] == "request":
         loan_request_data['lender_id'] = payer_id
 
@@ -155,7 +147,7 @@ def make_payment():
         loan_request_data['lender_occupation'] = payer_occupation
         loan_request_data['lender_type'] = payer_type
         loan_request_data['lender_account_num'] = payer_account_id
-        loan_request_data['amount_left'] = loan_request_data['principal']
+        loan_request_data['amount_left'] = payment_amount
         loan_request_data['status'] = "active"
         payee_name = loan_request_data['borrower_name']
         
@@ -171,6 +163,17 @@ def make_payment():
 
     # Borrower to Lender (repayment)
     elif loan_request_data['status'] == "active":
+
+        # handle loan already funded
+        if payer_id == loan_request_data['lender_id']:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": {},
+                    'message': 'Loan already funded'
+                } 
+            )
+
         loan_request_data['amount_left'] -= payment_amount
 
         if loan_request_data['amount_left'] <= 0:
@@ -194,7 +197,7 @@ def make_payment():
                 } 
             )
         
-    # 6. Add payee to beneficiary list in tBank
+    # 6a. Add payee to beneficiary list in tBank
     beneficiary_requestObj = {
         "Header" : {
             "serviceName" : "addBeneficiary",
@@ -204,7 +207,7 @@ def make_payment():
         },
 
         "Content" : {
-            "accountID" : payee_account_id,
+            "AccountID" : payee_account_id,
             "Description" : payee_name
         }
     }
@@ -217,8 +220,32 @@ def make_payment():
                 'message': 'Failed to add beneficiary'
             } 
         )
+    
+    # 6b. Add commission bank account to beneficiary list in tBank
+    beneficiary_requestObj = {
+        "Header" : {
+            "serviceName" : "addBeneficiary",
+            "userID" : payer_id,
+            "PIN" : PIN,
+            "OTP" : OTP
+        },
 
-    # 6a. Send email to payer
+        "Content" : {
+            "AccountID" : "9997",
+            "Description" : "Kelvin (Commission)"
+        }
+    }
+    add_beneficiary_response = requests.post(beneficiary_URL + "add", json=beneficiary_requestObj)
+    if add_beneficiary_response.json()['code'] >= 400:
+        return jsonify(
+            {
+                "code": 500,
+                "data": add_beneficiary_response.json(),
+                'message': 'Failed to add beneficiary'
+            } 
+        )
+
+    # 7a. Send email to payer
     email_requestObj = {
         "Header" : {
             "serviceName" : "sendEmail",
@@ -244,7 +271,7 @@ def make_payment():
             } 
         )
 
-    # 6b. Send sms to payer
+    # 7b. Send sms to payer
 
     sms_requestObj = {
         "Header" : {
@@ -271,7 +298,7 @@ def make_payment():
             } 
         )
 
-    # 7. Log transaction
+    # 8. Log transaction
 
     # for repayment/loan transaction
     transaction_requestObj = {
@@ -315,7 +342,7 @@ def make_payment():
             } 
         )
 
-    # 8. Make payment
+    # 9. Make payment
 
     # Loan/Repayment
     payment_requestObj = {
