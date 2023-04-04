@@ -80,12 +80,28 @@ def user_get_all(userid):
                 "data": creditScore.json()
             }
         )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "No credit scores found."
-        }
-    ), 404
+    else:
+        try:
+            newCreditScore = CreditScore(**{
+                "user_id": userid, 
+                "credit_score": 600
+                })
+            db.session.add(newCreditScore)
+            db.session.commit()
+            return jsonify(
+            {
+                "code": 200,
+                "data": newCreditScore.json()
+            }
+        )
+        except:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": {},
+                    "message": "An error occurred creating the credit score."
+                }
+            ), 500
 
 
 @app.route("/creditscore/create", methods=['POST'])
