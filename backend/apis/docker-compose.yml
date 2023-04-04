@@ -1,5 +1,6 @@
 version: "3.8"
-
+volumes:
+  pgdata:
 services:
   ###################################
   # Beneficiary
@@ -23,7 +24,7 @@ services:
       dockerfile: credit_score.Dockerfile
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/CreditScoreDB
+      dbURL: mysql+mysqlconnector://dbea@host.docker.internal:3306/CreditScoreDB
       PYTHONUNBUFFERED: 1
     ports:
       - "5005:5005"
@@ -51,7 +52,7 @@ services:
     # image: brunogjh/movie_list:esd-project
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/LoanRequestDB
+      dbURL: mysql+mysqlconnector://dbea@host.docker.internal:3306/LoanRequestDB
       PYTHONUNBUFFERED: 1
     ports:
       - "5006:5006"
@@ -91,7 +92,7 @@ services:
       dockerfile: transaction.Dockerfile
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/transactiondb
+      dbURL: mysql+mysqlconnector://dbea@host.docker.internal:3306/transactiondb
       PYTHONUNBUFFERED: 1
     ports:
       - "5004:5004"
