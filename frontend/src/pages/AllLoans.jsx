@@ -9,7 +9,7 @@ function AllLoans() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const getAllLoansURL = "http://localhost:5407/view_all_loan_request"
+        const getAllLoansURL = "http://localhost:5400/view_all_loan_request"
         const req = fetch(
             getAllLoansURL
         )
@@ -26,7 +26,6 @@ function AllLoans() {
                 }
                 tableData.push(loanData);
             })
-
             setData(tableData);
             setLoading(false);
         })

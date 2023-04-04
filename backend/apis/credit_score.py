@@ -70,9 +70,9 @@ def find_by_credit_score_id(creditscore_id):
     ), 404
 
 
-@app.route("/creditscore/user/get/<string:userid>")
-def user_get_all(userid):
-    creditScore = CreditScore.query.filter_by(user_id=userid).first()
+@app.route("/creditscore/user/get/<string:user_id>")
+def user_get_all(user_id):
+    creditScore = CreditScore.query.filter_by(user_id=user_id).first()
     if creditScore:
         return jsonify(
             {
@@ -83,7 +83,7 @@ def user_get_all(userid):
     else:
         try:
             newCreditScore = CreditScore(**{
-                "user_id": userid, 
+                "user_id": user_id, 
                 "credit_score": 600
                 })
             db.session.add(newCreditScore)
