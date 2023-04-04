@@ -80,6 +80,32 @@ def user_get_all(userid):
                 "data": creditScore.json()
             }
         )
+    else:
+        try:
+            print(0)
+            newCreditScore = CreditScore(**{
+                "user_id": userid, 
+                "credit_score": 600
+                })
+            print(1)
+            db.session.add(newCreditScore)
+            print(2)
+            db.session.commit()
+            return jsonify(
+            {
+                "code": 200,
+                "data": newCreditScore.json()
+            }
+        )
+        except:
+            return jsonify(
+                {
+                    "code": 500,
+                    "data": {},
+                    "message": "An error occurred creating the credit score."
+                }
+            ), 500
+        
     return jsonify(
         {
             "code": 404,
