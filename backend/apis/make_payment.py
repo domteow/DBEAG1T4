@@ -355,7 +355,7 @@ def make_payment():
             {
                 "code": 500,
                 "data": payment_response.json(),
-                'message': f'Failed to pay commission'
+                'message': 'Failed to pay commission'
             } 
         )
     return jsonify(

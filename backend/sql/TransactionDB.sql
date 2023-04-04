@@ -13,7 +13,3 @@ CREATE TABLE Transaction (
     transaction_date varchar(20) NOT NULL
 );
 
--- INSERT INTO Transaction (borrower_id, lender_id, amount, reason, transaction_date)
--- VALUES (1, 2, 100, 'Loan Repayment', '24-03-2023'), 
--- (2, 3, 150, 'Loan Repayment', '03-03-2023'), 
--- (2, 3, 300, 'Loan Repayment', '24-03-2023');
