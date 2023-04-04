@@ -102,36 +102,35 @@ function LoanDetails() {
             "lender_account_num": account,
             "lender_phone": (userInfo.cellphone.countryCode) + (userInfo.cellphone.phoneNumber),
             "lender_email": userInfo.profile.email,
-            "status": "active"
         }
 
         // need add check that u are not lending your own loan request
         console.log(fundInformation)
 
-        // if (account){
-        //     const fundLoanURL = 'http://localhost:5006/loanrequest/update/' + loanInfo['loan_request_id']
-        //     const res = fetch(
-        //     fundLoanURL,
-        //     {   method: 'PUT',
-        //         headers: {
-        //             Accept: 'application/json',
-        //             'Content-Type': 'application/json;charset=UTF-8',
-        //         },
-        //         body: JSON.stringify(fundInformation)})
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         console.log(data)
-        //         setError("")
-        //         // navigate("/myloan")
-        //     })
-        //     .catch((error) => {
-        //         setError("An error happen when applying the loan")
-        //         console.log(error)
-        //     })
-        // }
-        // else{
-        //     setError("Please input the account ID")
-        // }
+        if (account){
+            const fundLoanURL = 'http://localhost:5006/loanrequest/update/' + loanInfo['loan_request_id']
+            const res = fetch(
+            fundLoanURL,
+            {   method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify(fundInformation)})
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                setError("")
+                // navigate("/myloan")
+            })
+            .catch((error) => {
+                setError("An error happen when applying the loan")
+                console.log(error)
+            })
+        }
+        else{
+            setError("Please input the account ID")
+        }
 
         //PAYMENT
         const lenderPin = localStorage.getItem('pin')

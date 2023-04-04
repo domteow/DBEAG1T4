@@ -75,11 +75,10 @@ function CreateLoan() {
     function calculate_monthly_installment(loan_amount, interest_rate, loan_term){
         const r = (interest_rate / 12) ;
         console.log(r, loan_term, loan_amount)
-        const M = loan_amount * ((r * (1 + r) ** loan_term) / ((1 + r) ** loan_term - 1))
+        const M = loan_amount * (r * (1 + r) ** loan_term) / ((1 + r) ** loan_term - 1)
         console.log(M)
         return M
     }
-        
 
     function calculateInterestAmt(loanAmt, loanRate){
         return Math.round(loanAmt * loanRate);
@@ -119,7 +118,7 @@ function CreateLoan() {
         createLoanInfo['loan_term'] = calculateLoanTerm(start_date, maturity_date)
         createLoanInfo["repayment_period"] = values["repayment_period"]
         createLoanInfo["interest_rate"] = values["interest_rate"]
-        // not sure if need * 1.0.1
+        createLoanInfo["amount_left"] = values["principal"] 
         createLoanInfo["principal"] = values["principal"] 
         createLoanInfo["reason"] = values["reason"]
         createLoanInfo["start_date"] = start_date
