@@ -116,9 +116,7 @@ def create_credit_score():
         return jsonify(
             {
                 "code": 500,
-                "data": {
-                    "transaction_id": creditScore.credit_score_id
-                },
+                "data": {},
                 "message": "An error occurred creating the credit score."
             }
         ), 500
