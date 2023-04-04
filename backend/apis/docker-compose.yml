@@ -1,0 +1,147 @@
+version: "3.8"
+
+services:
+  ###################################
+  # Beneficiary
+  ###################################
+  beneficiary:
+    build:
+      context: ./
+      dockerfile: beneficiary.Dockerfile
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5007:5007"
+
+  #######################################################
+  # Credit_score
+  #######################################################
+  credit_score:
+    build:
+      context: ./
+      dockerfile: credit_score.Dockerfile
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/CreditScoreDB
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
+
+  #######################################################
+  # Customer
+  #######################################################
+  customer:
+    build:
+      context: ./
+      dockerfile: customer.Dockerfile
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"
+
+  #######################################################
+  # Loan_request
+  #######################################################
+  loan_request:
+    build:
+      context: ./
+      dockerfile: loan_request.Dockerfile
+    # image: brunogjh/movie_list:esd-project
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/LoanRequestDB
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5006:5006"
+
+  #######################################################
+  # Notification
+  #######################################################
+  notification:
+    build:
+      context: ./
+      dockerfile: notification.Dockerfile
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5002:5002"
+
+  #######################################################
+  # Payment
+  #######################################################
+  payment:
+    build:
+      context: ./
+      dockerfile: payment.Dockerfile
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5003:5003"
+
+  #######################################################
+  # Transaction
+  #######################################################
+  transaction:
+    build:
+      context: ./
+      dockerfile: transaction.Dockerfile
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/transactiondb
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5004:5004"
+
+  ###############################################
+  # Make Payment: Complex Microservice
+  ###############################################
+  make_payment:
+    build:
+      context: ./
+      dockerfile: make_payment.Dockerfile
+    restart: always
+    depends_on:
+      - beneficiary
+      - credit_score
+      - customer
+      - loan_request
+      - notification
+      - payment
+      - transaction
+    environment:
+      payment_URL: http://payment:5003/payment/credittransfer
+      transaction_URL: http://transaction:5004/transaction/
+      customer_URL: http://customer:5001/customer/
+      loan_request_URL: http://loan_request:5006/loanrequest/
+      notification_URL: http://notification:5002/notification/
+      beneficiary_URL: http://beneficiary:5007/beneficiary/
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5300:5300"
+
+  ###############################################
+  # View all Loan Request: Complex Microservice
+  ###############################################
+  view_all_loan_request:
+    build:
+      context: ./
+      dockerfile: view_all_loan_request.Dockerfile
+    restart: always
+    depends_on:
+      - beneficiary
+      - credit_score
+      - customer
+      - loan_request
+      - notification
+      - payment
+      - transaction
+    environment:
+      credit_score_URL: http://credit_score:5005/creditscore
+      loan_request_URL: http://loan_request:5006/loanrequest/
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5400:5400"
