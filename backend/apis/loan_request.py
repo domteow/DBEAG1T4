@@ -39,13 +39,18 @@ class LoanRequest(db.Model):
     borrower_occupation = db.Column(db.String(255), nullable = False)
     borrower_type = db.Column(db.String(255), nullable = False)
     borrower_account_num = db.Column(db.String(255), nullable = False)
-    lender_name = db.Column(db.String(255), nullable = False)
-    lender_nationality = db.Column(db.String(255), nullable = False)
-    lender_occupation = db.Column(db.String(255), nullable = False)
-    lender_type = db.Column(db.String(255), nullable = False)
-    lender_account_num = db.Column(db.String(255), nullable = False)
+    borrower_email = db.Column(db.String(255), nullable = False)
+    borrower_phone = db.Column(db.String(20), nullable = False)
+    borrower_PIN = db.Column(db.String(255), nullable = False)
+    lender_name = db.Column(db.String(255))
+    lender_nationality = db.Column(db.String(255))
+    lender_occupation = db.Column(db.String(255))
+    lender_type = db.Column(db.String(255))
+    lender_account_num = db.Column(db.String(255))
+    lender_email = db.Column(db.String(255))
+    lender_phone = db.Column(db.String(20))
 
-    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, start_date, maturity_date, date_of_next_repayment, loan_term, repayment_period, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num, lender_name, lender_nationality, lender_occupation, lender_type, lender_account_num,):
+    def __init__(self, principal, borrower_id, lender_id, interest_rate, monthly_installment, start_date, maturity_date, date_of_next_repayment, loan_term, repayment_period, status, amount_left, reason, borrower_name, borrower_nationality, borrower_occupation, borrower_type, borrower_account_num, borrower_email, borrower_phone, borrower_PIN, lender_name, lender_nationality, lender_occupation, lender_type, lender_account_num, lender_email, lender_phone):
         self.principal = principal
         self.borrower_id = borrower_id
         self.lender_id = lender_id
@@ -64,11 +69,16 @@ class LoanRequest(db.Model):
         self.borrower_occupation = borrower_occupation
         self.borrower_type = borrower_type
         self.borrower_account_num = borrower_account_num
+        self.borrower_email = borrower_email
+        self.borrower_phone = borrower_phone
+        self.borrower_PIN = borrower_PIN
         self.lender_name = lender_name
         self.lender_nationality = lender_nationality
         self.lender_occupation = lender_occupation
         self.lender_type = lender_type
         self.lender_account_num = lender_account_num
+        self.lender_email = lender_email
+        self.lender_phone = lender_phone
         
 
     def json(self):
@@ -92,11 +102,16 @@ class LoanRequest(db.Model):
             "borrower_occupation": self.borrower_occupation,
             "borrower_type": self.borrower_type,
             "borrower_account_num": self.borrower_account_num,
+            "borrower_email": self.borrower_email,
+            "borrower_phone": self.borrower_phone,
+            "borrower_PIN": self.borrower_PIN,
             "lender_name": self.lender_name,
             "lender_nationality": self.lender_nationality,
             "lender_occupation": self.lender_occupation,
             "lender_type": self.lender_type,
-            "lender_account_num": self.lender_account_num
+            "lender_account_num": self.lender_account_num,
+            "lender_email": self.lender_email,
+            "lender_phone": self.lender_phone
             }
 
 @app.route("/loanrequest/getall")
