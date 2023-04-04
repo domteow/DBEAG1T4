@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS LoanRequest (
     lender_type varchar(255),
     lender_account_num varchar(255),
     lender_email varchar(255),
-    lender_phone varchar(20),
+    lender_phone varchar(20)
     );
 
 INSERT INTO LoanRequest (principal, borrower_id, lender_id, interest_rate, monthly_installment, maturity_date, status, amount_left, reason,
