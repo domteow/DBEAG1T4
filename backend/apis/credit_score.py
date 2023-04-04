@@ -82,14 +82,11 @@ def user_get_all(userid):
         )
     else:
         try:
-            print(0)
             newCreditScore = CreditScore(**{
                 "user_id": userid, 
                 "credit_score": 600
                 })
-            print(1)
             db.session.add(newCreditScore)
-            print(2)
             db.session.commit()
             return jsonify(
             {
@@ -105,13 +102,6 @@ def user_get_all(userid):
                     "message": "An error occurred creating the credit score."
                 }
             ), 500
-        
-    return jsonify(
-        {
-            "code": 404,
-            "message": "No credit scores found."
-        }
-    ), 404
 
 
 @app.route("/creditscore/create", methods=['POST'])
