@@ -18,13 +18,15 @@ function AllLoans() {
             const tableData = []
             const allData = data['data']['all_loan_requests']
             allData.forEach((data)  => {
-                const loanData = {
-                    loanId: data["loan_request_id"],
-                    name: data["borrower_name"],
-                    loanAmt: data["principal"],
-                    loanTerms: data["loan_term"]
+                if (data["status"] == "request"){
+                    const loanData = {
+                        loanId: data["loan_request_id"],
+                        name: data["borrower_name"],
+                        loanAmt: data["principal"],
+                        loanTerms: data["loan_term"]
+                    }
+                    tableData.push(loanData);
                 }
-                tableData.push(loanData);
             })
             setData(tableData);
             setLoading(false);

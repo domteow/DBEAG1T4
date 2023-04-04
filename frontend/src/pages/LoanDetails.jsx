@@ -15,7 +15,7 @@ function LoanDetails() {
     const [account, setAccount] = useState("")
     const [error, setError] = useState("")
     const userInfo = JSON.parse(localStorage.getItem('user'))
-    const userId = userInfo.customer.customerID
+    const userId = localStorage.getItem('username')
 
     useEffect(() => {
         console.log(userInfo)
@@ -92,47 +92,85 @@ function LoanDetails() {
     function fundLoan(){
 
         const fundInformation = {
-            "loan_request_id": loanInfo['loan_request_id'],
-            "borrower_id": loanInfo['borrower_id'],
+            // "loan_request_id": loanInfo['loan_request_id'],
+            // "borrower_id": loanInfo['borrower_id'],
             "lender_id": userId,
-            // "lender_name": userInfo.givenName,
-            // "lender_nationality": userInfo.profile.nationality,
-            // "lender_occupation": userInfo.profile.occupation,
-            // "lender_type": userInfo.profile.type,
-            // "lender_account_num": account
+            "lender_name": userInfo.givenName,
+            "lender_nationality": userInfo.profile.nationality,
+            "lender_occupation": userInfo.profile.occupation,
+            "lender_type": userInfo.profile.customerType,
+            "lender_account_num": account,
+            "lender_phone": (userInfo.cellphone.countryCode) + (userInfo.cellphone.phoneNumber),
+            "lender_email": userInfo.profile.email,
+            "status": "active"
         }
 
-        // add lender info
         // need add check that u are not lending your own loan request
         console.log(fundInformation)
 
-        if (account){
-            const fundLoanURL = 'http://localhost:5007/loanrequest/create'
-            const res = fetch(
-            fundLoanURL,
-            {   method: 'POST',
+        // if (account){
+        //     const fundLoanURL = 'http://localhost:5006/loanrequest/update/' + loanInfo['loan_request_id']
+        //     const res = fetch(
+        //     fundLoanURL,
+        //     {   method: 'PUT',
+        //         headers: {
+        //             Accept: 'application/json',
+        //             'Content-Type': 'application/json;charset=UTF-8',
+        //         },
+        //         body: JSON.stringify(fundInformation)})
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         console.log(data)
+        //         setError("")
+        //         // navigate("/myloan")
+        //     })
+        //     .catch((error) => {
+        //         setError("An error happen when applying the loan")
+        //         console.log(error)
+        //     })
+        // }
+        // else{
+        //     setError("Please input the account ID")
+        // }
+
+        //PAYMENT
+        const lenderPin = localStorage.getItem('pin')
+        const paymentInfo = {
+            "userID": userId,
+            "PIN": lenderPin,
+            "OTP": "999999",
+            "payer_accountID": account ,
+            "payee_accountID": loanInfo["borrower_account_num"],
+            "loan_request_id": loanInfo["loan_request_id"],
+            "commission": loanInfo["principal"] * 0.01,
+            "payment_amount": loanInfo["principal"] * 0.01,
+            "payer_name": userInfo.givenName,
+            "payer_nationality": userInfo.profile.nationality,
+            "payer_occupation": userInfo.profile.occupation,
+            "payer_type": userInfo.profile.customerType
+        }
+
+        console.log(paymentInfo)
+        const makePaymentURL = "http://localhost:5300/make_payment"
+
+        const res = fetch(
+            makePaymentURL,
+            {
+                method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
                 },
-                body: JSON.stringify(fundInformation)})
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
-                setError("")
-                navigate("/myloan")
-            })
-            .catch((error) => {
-                setError("An error happen when applying the loan")
-                console.log(error)
-            })
-        }
-        else{
-            setError("Please input the account ID")
-        }
-        
-
-    }
+                body: JSON.stringify(paymentInfo)})
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+            }
+    
     return (
 		<div className='home'>
             <div className='mb-10 text-sm font-thin cursor-default' onClick={back_button}>
@@ -175,10 +213,10 @@ function LoanDetails() {
                 <div className='loaninfo grid-cols-3'> 
                     <InputText label="Loan ID" value= {loanInfo['loan_request_id']}/>
                     <InputText label="Loan Term" value= {loanInfo['loan_term'] + " months"}/>
-                    <InputText label="Loan Period" value= {loanInfo['maturity_date']} />
+                    <InputText label="Loan Period" value= {loanInfo['start_date'] + " to " + loanInfo['maturity_date']} />
                     <InputText label="Loan Amount" value= {"SGD $" + loanInfo['principal']} />
                     <InputText label="Interest Rate" value= {loanInfo['interest_rate'] + " %"}/>
-                    <InputText label="Repayment Amount" value= {loanInfo['monthly_installment']} />
+                    <InputText label="Repayment Amount" value= {"SGD $" + loanInfo['monthly_installment']} />
                     <InputText label="Repayment Period" value= {loanInfo['repayment_period'] + " months"}/>
                     <InputText label="Loan Purpose" value= {loanInfo['reason']}/>
                 </div> 

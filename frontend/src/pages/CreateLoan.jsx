@@ -53,7 +53,6 @@ function CreateLoan() {
                     account_list.push(accDetails)
                 })
                 setAccountList(account_list)
-                console.log(account_list)
             })
             .catch((error) => {
                 console.log(error)
@@ -61,20 +60,33 @@ function CreateLoan() {
     }, [])
 
     function calculateLoanTerm(start, end){ 
-        var startDate = moment(start, 'DD-MM-YYYY');
-        var endDate = moment(end, 'DD-MM-YYYY');
+        var startDate = moment(start, 'YYYY-MM-DD');
+        var endDate = moment(end, 'YYYY-MM-DD');
         var monthDiff = endDate.diff(startDate, 'months');
-        return monthDiff + 1
+        return monthDiff
     }
 
-    function calculateLoanRepaymentAmt(loanAmt, loanRate, loanTerm, loanRepaymentPeriod){
-        const totalAmt = loanAmt * (1 + (loanRate/100))
-        const numberOfPayments = loanTerm / loanRepaymentPeriod
-        return  Math.round(totalAmt/numberOfPayments);
+    // function calculateLoanRepaymentAmt(loanAmt, loanRate, loanTerm, loanRepaymentPeriod){
+    //     const totalAmt = loanAmt * (1 + (loanRate/100))
+    //     const numberOfPayments = loanTerm / loanRepaymentPeriod
+    //     return  Math.round(totalAmt/numberOfPayments);
+    // }
+
+    function calculate_monthly_installment(loan_amount, interest_rate, loan_term){
+        const r = (interest_rate / 12) ;
+        console.log(r, loan_term, loan_amount)
+        const M = loan_amount * ((r * (1 + r) ** loan_term) / ((1 + r) ** loan_term - 1))
+        console.log(M)
+        return M
     }
+        
 
     function calculateInterestAmt(loanAmt, loanRate){
         return Math.round(loanAmt * loanRate);
+    }
+
+    function calculateNextDateOfRepayment(start_date, repayment_period){
+        return moment(start_date).add(repayment_period, 'M').format('YYYY-MM-DD');
     }
 
     const onFinish = (values) => {
@@ -83,27 +95,39 @@ function CreateLoan() {
         const createLoanURL = "http://localhost:5006/loanrequest/create"
         const createLoanInfo = {
             "amount_left": null,
-            "borrower_id": userInfo.customer.customerID,
+            "borrower_id": localStorage.getItem('username'),
             "borrower_name": userInfo.givenName,
             "borrower_nationality": userInfo.profile.nationality,
             "borrower_occupation": userInfo.profile.occupation,
             "borrower_type": userInfo.profile.customerType,
-            "monthly_installment": "null",
+            "borrower_PIN": localStorage.getItem('pin'),
+            "borrower_phone": (userInfo.cellphone.countryCode) + (userInfo.cellphone.phoneNumber),
+            "borrower_email": userInfo.profile.email,
             "lender_id": null,
+            "lender_name": null,
+            "lender_nationality": null, 
+            "lender_occupation": null,
+            "lender_type": null,
+            "lender_account_num": null,
+            "lender_email": null,
+            "lender_phone": null,
             "status": "request"
         }
 
-        let start_date = values['loan_period'][0].format('DD-MM-YYYY');
-        let maturity_date = values['loan_period'][1].format('DD-MM-YYYY');
+        let start_date = values['loan_period'][0].format('YYYY-MM-DD');
+        let maturity_date = values['loan_period'][1].format('YYYY-MM-DD');
         createLoanInfo['loan_term'] = calculateLoanTerm(start_date, maturity_date)
         createLoanInfo["repayment_period"] = values["repayment_period"]
         createLoanInfo["interest_rate"] = values["interest_rate"]
-        createLoanInfo["principal"] = values["principal"] * 1.01
+        // not sure if need * 1.0.1
+        createLoanInfo["principal"] = values["principal"] 
         createLoanInfo["reason"] = values["reason"]
         createLoanInfo["start_date"] = start_date
         createLoanInfo["maturity_date"] = maturity_date
         createLoanInfo["borrower_account_num"] = values["borrower_account_num"]
-
+        createLoanInfo["monthly_installment"] = calculate_monthly_installment(values["principal"], values["interest_rate"], createLoanInfo["loan_term"])
+        createLoanInfo["date_of_next_repayment"] = calculateNextDateOfRepayment(start_date, values["repayment_period"])
+        
         console.log(createLoanInfo)
 
         const res = fetch(
@@ -133,16 +157,16 @@ function CreateLoan() {
                 Back
             </div>
             <div className='bg-white rounded-md h-full'>
-                <div className='loan-header text-black p-5 mb-5'>
+                <div className='loan-header text-black px-5 pt-5 mb-3'>
                     <div>Create Loan</div>
                 </div>
-                {error !== "" ? <Alert className="mx-8 mb-5 w-1/2" message={error} type="error" showIcon /> : <></>}
+                {error !== "" ? <Alert className="mx-8 mb-5 w-1/2" message={error} type="error" showIcon /> : 
+                    <Alert className="mx-4 mb-5 w-4/5" message="A 1% commision will be charged for platform use." type="info" showIcon />}
                 <div>
                     <Form
                         {...layout}
                         name="createLoan"
                         onFinish={onFinish}
-                        // initialValues={{ residence: ['zhejiang', 'hangzhou', 'xihu'], prefix: '86' }}
                         scrollToFirstError
                         className='font-normal w-4/5'
                         >
@@ -173,7 +197,6 @@ function CreateLoan() {
                             options={accountList}
                         />
                         </Form.Item>
-
 
                         <Form.Item>
                             <button type="primary" htmlType="submit" className='float-right rounded-md bg-lime-600 py-2 px-6'>
