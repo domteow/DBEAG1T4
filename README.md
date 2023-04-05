@@ -38,7 +38,7 @@ Our MySQL databases are managed by phpMyAdmin. In order to create and populate t
 
 ## Running the microservices
 
-1.  In your terminal, navigate to the `backend` folder in the code repository
+1.  In your terminal, navigate to the `backend/apis` folder in the code repository
 2.  For both Windows & MacOS users, run
     ```
     docker-compose up -d
