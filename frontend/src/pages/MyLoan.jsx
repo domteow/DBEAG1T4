@@ -5,15 +5,14 @@ import {Table, Spin} from 'antd';
 function MyLoan() {
     const navigate = useNavigate();
     const [listOfConfirmedLoansData, setListOfConfirmedLoansData] = useState([]);
-    const [loading, setLoading] = useState(false);
     const id = localStorage.getItem('username')
     const userPIN = JSON.parse(localStorage.getItem('pin'))
-    // const id = "domteow";
 
     function goToDetails(event){
         const id = event.currentTarget.id;
         navigate('/myloan/' + id, {replace: true})
     }
+
     function makeRepayment(event){
         // send repayment calculation here
         console.log("Make repayment")
@@ -79,7 +78,6 @@ function MyLoan() {
             console.log(listOfConfirmedLoansData)
             if (JSON.stringify(tableData) !=  JSON.stringify(listOfConfirmedLoansData)) {
                 setListOfConfirmedLoansData(tableData);
-                // setLoading(false);
             }
         })
         .catch((error) => {
@@ -136,84 +134,84 @@ function MyLoan() {
     //     }
     //     ];
 
-        const columns_confirmed_loans = [
-            {
-                title: 'Loan ID',
-                dataIndex: 'loan_request_id',
-                key: 'loan_request_id',
-                align: 'center',
-                render: (text) => <span className='font-normal'>{text}</span>
-            },
-            {
-                title: 'Name',
-                // dataIndex: 'borrower_name',
-                key: 'borrower_name',
-                align: 'center',
-                render: (text, record) => <span>{record['isLender'] ? record['borrower_name'] : record['lender_name'] }</span>,
-            },
-            {
-                title: 'Loan Amount',
-                dataIndex: 'principal',
-                key: 'principal',
-                align: 'center',
-                render: (text) => <span className='font-normal'>{text}</span>
-            },
-            // {
-            //     title: 'Loan Terms',
-            //     key: 'loan_term',
-            //     dataIndex: 'loan_term',
-            //     align: 'center',
-            //     render: (text) => <span className='font-normal'>{text}</span>
-            // },
-            {
-                title: 'Info',
-                key: 'action',
-                align: 'center',
-                render: (text, record) => (
-                    <a id={record.loan_request_id} onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
-                )
-            },
-            {
-                title: 'Repayment Amount',
-                key: 'monthly_installment',
-                dataIndex: 'monthly_installment',
-                align: 'center',
-                render: (text) => <span className='font-normal'>{text}</span>
-            },
-            {
-                title: 'Next Repayment Date',
-                key: 'date_of_next_repayment',
-                dataIndex: 'date_of_next_repayment',
-                align: 'center',
-                render: (text) => <span className='font-normal'>{text}</span>
-            },
-            {
-                title: 'Repayment',
-                key: 'action',
-                dataIndex: 'isLender',
-                align: 'center',
-                render: (text, record) => (
-                    <button 
-                    hidden={text}
-                    id={record.loan_request_id}
-                    onClick={makeRepayment}
-                    className='bg-green-500	rounded-full p-4 px-7'>Pay</button>
-                )
-            }
-            ];
+    const columns_confirmed_loans = [
+        {
+            title: 'Loan ID',
+            dataIndex: 'loan_request_id',
+            key: 'loan_request_id',
+            align: 'center',
+            render: (text) => <span className='font-normal'>{text}</span>
+        },
+        {
+            title: 'Name',
+            // dataIndex: 'borrower_name',
+            key: 'borrower_name',
+            align: 'center',
+            render: (text, record) => <span>{record['isLender'] ? record['borrower_name'] : record['lender_name'] }</span>,
+        },
+        {
+            title: 'Loan Amount',
+            dataIndex: 'principal',
+            key: 'principal',
+            align: 'center',
+            render: (text) => <span className='font-normal'>{text}</span>
+        },
+        // {
+        //     title: 'Loan Terms',
+        //     key: 'loan_term',
+        //     dataIndex: 'loan_term',
+        //     align: 'center',
+        //     render: (text) => <span className='font-normal'>{text}</span>
+        // },
+        {
+            title: 'Info',
+            key: 'action',
+            align: 'center',
+            render: (text, record) => (
+                <a id={record.loan_request_id} onClick={goToDetails} className="rounded-full bg-sky-400 p-4 text-white">Details</a>
+            )
+        },
+        {
+            title: 'Repayment Amount',
+            key: 'monthly_installment',
+            dataIndex: 'monthly_installment',
+            align: 'center',
+            render: (text) => <span className='font-normal'>{text}</span>
+        },
+        {
+            title: 'Next Repayment Date',
+            key: 'date_of_next_repayment',
+            dataIndex: 'date_of_next_repayment',
+            align: 'center',
+            render: (text) => <span className='font-normal'>{text}</span>
+        },
+        {
+            title: 'Repayment',
+            key: 'action',
+            dataIndex: 'isLender',
+            align: 'center',
+            render: (text, record) => (
+                <button 
+                hidden={text}
+                disabled={record.date_of_next_repayment != new Date().toJSON().split('T')[0]}
+                id={record.loan_request_id}
+                onClick={makeRepayment}
+                className='bg-green-500	rounded-full p-4 px-7 disabled:opacity-75 disabled:bg-slate-500	disabled:text-white'>Pay</button>
+            )
+        }
+        ];
 
     return (
         <div className='home'>
             <div className='mb-10'>My Loans</div>
             <div className='text-lg mb-2'>Confirmed Loans</div>
-            { loading === true ? <Spin style={{"width":"1000px","margin":"auto", "color": "white"}} tip="Loading"></Spin> : 
             <Table
                 columns= {columns_confirmed_loans}
                 dataSource= {listOfConfirmedLoansData}
                 pagination={false}
                 footer={() => ''}>
             </Table>
-            }
+            
         </div>
     )
     }
