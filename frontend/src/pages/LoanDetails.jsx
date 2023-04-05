@@ -101,7 +101,7 @@ function LoanDetails() {
     function calculate_monthly_installment(principal_amt, interest_rate, maturity, repayment_period){
         const loan_term = calculateLoanTerm(maturity)
         console.log(loan_term)
-        const monthly_installment = ((principal_amt * interest_rate * (loan_term/12)) + principal_amt) / repayment_period
+        const monthly_installment = ((principal_amt * (interest_rate/100) * (loan_term/12)) + principal_amt) / repayment_period
         console.log(principal_amt, interest_rate, loan_term, repayment_period)
         console.log(monthly_installment)
         return monthly_installment
@@ -124,7 +124,7 @@ function LoanDetails() {
         }
 
         fundInformation["loan_term"] = calculateLoanTerm(loanInfo["maturity_date"])
-        fundInformation["monthly_installment"] = calculate_monthly_installment(loanInfo["principal"], loanInfo["interest_rate"], loanInfo["maturity_date"], loanInfo["repayment_period"])
+        fundInformation["monthly_installment"] = calculate_monthly_installment(loanInfo["principal"], loanInfo["interest_rate"], loanInfo["maturity_date"], parseInt(loanInfo["repayment_period"]))
 
         // need add check that u are not lending your own loan request
         console.log(fundInformation)

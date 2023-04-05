@@ -8,6 +8,14 @@ function MyLoan() {
     const id = localStorage.getItem('username')
     const userPIN = JSON.parse(localStorage.getItem('pin'))
 
+    function getTodayDate() {
+        var date_arr = new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"}).split(',')[0].split('/').reverse()
+        if (date_arr[1].length != 2) {  date_arr[1] = '0' + date_arr[1]}
+        if (date_arr[2].length != 2) {  date_arr[2] = '0' + date_arr[2]}
+        [date_arr[1], date_arr[2]] = [date_arr[2], date_arr[1]]
+        return date_arr.join("-")
+    }
+
     function goToDetails(event){
         const id = event.currentTarget.id;
         navigate('/myloan/' + id, {replace: true})
@@ -52,6 +60,7 @@ function MyLoan() {
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
+            getConfirmedLoans()
         })
         .catch((error) => {
             console.log(error)
@@ -59,8 +68,8 @@ function MyLoan() {
     }
 
     // To fill Confirmed Loans Table
-    useEffect(() => {
 
+    function getConfirmedLoans() {
         const getConfirmedLoansURL = "http://localhost:5006/loanrequest/getall"
         const req = fetch(
             getConfirmedLoansURL
@@ -85,6 +94,10 @@ function MyLoan() {
         .catch((error) => {
             console.log(error)
         })
+    }
+
+    useEffect(() => {
+        getConfirmedLoans()
     },listOfConfirmedLoansData)
 
     //     {
@@ -195,7 +208,7 @@ function MyLoan() {
             render: (text, record) => (
                 <button 
                 hidden={text}
-                disabled={record.date_of_next_repayment != new Date().toJSON().split('T')[0]}
+                disabled={record.date_of_next_repayment != getTodayDate()}
                 id={record.loan_request_id}
                 onClick={makeRepayment}
                 className='bg-green-500	rounded-full p-4 px-7 disabled:opacity-75 disabled:bg-slate-500	disabled:text-white'>Pay</button>
