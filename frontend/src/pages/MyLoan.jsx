@@ -201,6 +201,13 @@ function MyLoan() {
             render: (text) => <span className='font-normal'>{text}</span>
         },
         {
+            title: 'Amount Left to Pay',
+            key: 'amount_left',
+            dataIndex: 'amount_left',
+            align: 'center',
+            render: (text) => <span className='font-normal'>{text}</span>
+        },
+        {
             title: 'Repayment',
             key: 'action',
             dataIndex: 'isLender',
