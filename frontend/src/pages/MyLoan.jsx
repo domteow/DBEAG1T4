@@ -242,9 +242,11 @@ function MyLoan() {
                 }}
                 open={modalOpen}
                 onOk={() => setModalOpen(false)}
-            >
-                
-                <p className='m-auto w-screen'><p className='text-lg font-bold'>PAYMENT SUCCESSFUL</p><CheckCircleIcon className='text-green-500 w-48'></CheckCircleIcon></p>
+            >   
+                <p className='flex justify-center align-middle items-center flex-col'>
+                    <p className='text-lg font-bold'>PAYMENT SUCCESSFUL</p>
+                    <CheckCircleIcon className='text-green-500 w-48'></CheckCircleIcon>
+                </p>
             </Modal>
             
         </div>

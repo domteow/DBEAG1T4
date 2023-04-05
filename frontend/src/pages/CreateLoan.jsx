@@ -64,7 +64,7 @@ function CreateLoan() {
         var startDate = moment(start, 'YYYY-MM-DD');
         var maturityDate = moment(maturity, 'YYYY-MM-DD');
         var monthDiff = maturityDate.diff(startDate, 'months');
-        return monthDiff
+        return monthDiff + 1
     }
 
     function calculateNextDateOfRepayment(start_date, repayment_period){

@@ -104,7 +104,7 @@ function LoanDetails() {
         const monthly_installment = ((principal_amt * (interest_rate/100) * (loan_term/12)) + principal_amt) / repayment_period
         console.log(principal_amt, interest_rate, loan_term, repayment_period)
         console.log(monthly_installment)
-        return monthly_installment
+        return parseInt(monthly_installment)
     }
 
     function fundLoan(){
