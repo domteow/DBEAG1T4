@@ -32,7 +32,9 @@ function MyLoan() {
             "payer_name": specific_loan_request["borrower_name"],
             "payer_nationality": specific_loan_request["borrower_nationality"],
             "payer_occupation": specific_loan_request["borrower_occupation"],
-            "payer_type": specific_loan_request["borrower_type"]
+            "payer_type": specific_loan_request["borrower_type"],
+            'payer_email': "",
+            "payer_phone": ""
         };
         console.log(data)
         const makePaymentURL = "http://localhost:5300/make_payment"
