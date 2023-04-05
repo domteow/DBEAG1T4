@@ -1,10 +1,12 @@
 import React, {useEffect, useState}  from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Table, Spin} from 'antd';
+import {Table, Modal} from 'antd';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 function MyLoan() {
     const navigate = useNavigate();
     const [listOfConfirmedLoansData, setListOfConfirmedLoansData] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false)
     const id = localStorage.getItem('username')
     const userPIN = JSON.parse(localStorage.getItem('pin'))
 
@@ -61,6 +63,7 @@ function MyLoan() {
         .then((data) => {
             console.log(data)
             getConfirmedLoans()
+            setModalOpen(true)
         })
         .catch((error) => {
             console.log(error)
@@ -233,6 +236,16 @@ function MyLoan() {
                 pagination={false}
                 footer={() => ''}>
             </Table>
+            <Modal
+                style={{
+                    top: 200,
+                }}
+                open={modalOpen}
+                onOk={() => setModalOpen(false)}
+            >
+                
+                <p className='m-auto w-screen'><p className='text-lg font-bold'>PAYMENT SUCCESSFUL</p><CheckCircleIcon className='text-green-500 w-48'></CheckCircleIcon></p>
+            </Modal>
             
         </div>
     )
