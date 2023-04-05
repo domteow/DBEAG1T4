@@ -143,7 +143,7 @@ function LoanDetails() {
             .then((data) => {
                 console.log(data)
                 setError("")
-                // navigate("/myloan")
+                navigate("/myloan")
             })
             .catch((error) => {
                 setError("An error happen when applying the loan")
@@ -164,11 +164,13 @@ function LoanDetails() {
             "payee_accountID": loanInfo["borrower_account_num"],
             "loan_request_id": loanInfo["loan_request_id"],
             "commission": loanInfo["principal"] * 0.01,
-            "payment_amount": loanInfo["principal"] * 0.01,
+            "payment_amount": loanInfo["principal"] * 1.01,
             "payer_name": userInfo.givenName,
             "payer_nationality": userInfo.profile.nationality,
             "payer_occupation": userInfo.profile.occupation,
-            "payer_type": userInfo.profile.customerType
+            "payer_type": userInfo.profile.customerType,
+            "payer_email": fundInformation["lender_email"],
+            "payer_phone": fundInformation["lender_phone"] 
         }
 
         console.log(paymentInfo)
@@ -203,7 +205,7 @@ function LoanDetails() {
                 { location.pathname.split('/')[1] == "loan" ? 
                     <PersonalDetails 
                     name= {loanInfo['borrower_name']} 
-                    creditScore= "A"
+                    creditScore= "500"
                     nationality= {loanInfo['borrower_nationality']}
                     occupation= {loanInfo['borrower_occupation']}
                     type= {loanInfo['borrower_type']}
@@ -212,14 +214,14 @@ function LoanDetails() {
                 loanInfo['borrower_id'] != userId ? 
                     <PersonalDetails 
                     name= {loanInfo['borrower_name']} 
-                    creditScore= "A"
+                    creditScore= "500"
                     nationality= {loanInfo['borrower_nationality']}
                     occupation= {loanInfo['borrower_occupation']}
                     type= {loanInfo['borrower_type']}
                     /> : 
                     <PersonalDetails 
                         name= {loanInfo['lender_name']} 
-                        creditScore= "A"
+                        creditScore= "500"
                         nationality= {loanInfo['lender_nationality']}
                         occupation= {loanInfo['lender_occupation']}
                         type= {loanInfo['lender_type']}
