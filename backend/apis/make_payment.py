@@ -58,31 +58,33 @@ def make_payment():
     payer_nationality = data['payer_nationality']
     payer_occupation = data['payer_occupation']
     payer_type = data['payer_type']
+    payer_email = data['payer_email']
+    payer_phone = data['payer_phone']
 
 
 
     # 2. Get payer customer details using payer id
 
-    details_requestObj = {
-        "Header" : {
-            "serviceName" : "getCustomerDetails",
-            "userID" : payer_id,
-            "PIN" : PIN,
-            "OTP" : OTP
-        }
-    }
-    payer_customer_details = requests.post(customer_URL + "getdetails", json=details_requestObj)
-    if payer_customer_details.json()['code'] >= 400:
-        return jsonify(
-            {
-                "code": 500,
-                "data": {},
-                'message': 'Failed to get payer customer details'
-            } 
-        )
-    payer_customer_details = payer_customer_details.json()['data']['Content']['ServiceResponse']['CDMCustomer']
-    payer_email = payer_customer_details['profile']['email']
-    payer_phone = str(payer_customer_details['cellphone']['countryCode']) + str(payer_customer_details['cellphone']['phoneNumber'])
+    # details_requestObj = {
+    #     "Header" : {
+    #         "serviceName" : "getCustomerDetails",
+    #         "userID" : payer_id,
+    #         "PIN" : PIN,
+    #         "OTP" : OTP
+    #     }
+    # }
+    # payer_customer_details = requests.post(customer_URL + "getdetails", json=details_requestObj)
+    # if payer_customer_details.json()['code'] >= 400:
+    #     return jsonify(
+    #         {
+    #             "code": 500,
+    #             "data": {},
+    #             'message': 'Failed to get payer customer details'
+    #         } 
+    #     )
+    # payer_customer_details = payer_customer_details.json()['data']['Content']['ServiceResponse']['CDMCustomer']
+    # payer_email = payer_customer_details['profile']['email']
+    # payer_phone = str(payer_customer_details['cellphone']['countryCode']) + str(payer_customer_details['cellphone']['phoneNumber'])
     
     
     # 3. get data from Loan Request DB
@@ -187,6 +189,24 @@ def make_payment():
         payee_name = loan_request_data['lender_name']
         payee_email = loan_request_data['lender_email']
         payee_phone = loan_request_data['lender_phone']
+        payer_email = loan_request_data['borrower_email']
+        payer_phone = loan_request_data['borrower_phone']
+
+        # change date of next repayment to next month
+
+        # Convert the current repayment date string to a tuple of year, month, and day
+        year, month, day = map(int, loan_request_data['date_of_next_repayment'].split('-'))
+
+        # Increment the month by 1
+        if month == 12:
+            year += 1
+            month = 1
+        else:
+            month += 1
+
+        # Format the resulting year, month, and day back into a string
+        loan_request_data['date_of_next_repayment'] = f"{year:04d}-{month:02d}-{day:02d}"
+
 
 
         update_loan_request = requests.put(loan_request_URL + "update/" + str(loan_request_id), json=loan_request_data)
@@ -261,7 +281,7 @@ def make_payment():
         "Content" : {
             "emailAddress" : payer_email,
             "emailSubject" : "Payment Successful",
-            "emailBody" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_account_id)
+            "emailBody" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_name)
         }
     }
 
@@ -287,7 +307,7 @@ def make_payment():
 
         "Content" : {
             "mobileNumber" : payer_phone,
-            "message" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_account_id)
+            "message" : "You have successfully made a payment of $" + str(payment_amount) + " to " + str(payee_name)
         }
     }
 
@@ -314,7 +334,7 @@ def make_payment():
         "Content" : {
             "emailAddress" : payee_email,
             "emailSubject" : "Payment Successful",
-            "emailBody" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_account_id)
+            "emailBody" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_name)
         }
     }
 
@@ -340,7 +360,7 @@ def make_payment():
 
         "Content" : {
             "mobileNumber" : payee_phone,
-            "message" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_account_id)
+            "message" : "You have received a payment of $" + str(payment_amount) + " from " + str(payer_name)
         }
     }
 
