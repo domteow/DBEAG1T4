@@ -12,7 +12,7 @@ function Home() {
 			<div className='loandetail'>
 				<PersonalDetails 
 					name = {userInfo.givenName + " " + userInfo.familyName}
-					creditScore = "A"
+					creditScore = "Very Good"
 					nationality = {userInfo.profile.nationality}
 					occupation = {userInfo.profile.occupation}
 					type = {userInfo.profile.customerType == "100" ? "Retail" : "Corporate"}
