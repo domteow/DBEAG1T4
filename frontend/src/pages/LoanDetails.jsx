@@ -72,6 +72,7 @@ function LoanDetails() {
             })
             .catch((error) => {
                 console.log(error)
+                setError(error)
             })
     }, [])
 
@@ -88,6 +89,23 @@ function LoanDetails() {
             navigate('/myloan')
         }
     }
+    // loan term (from starting to fund loan to maturity date)
+    // createLoanInfo['loan_term'] = calculateLoanTerm(maturity_date)
+    function calculateLoanTerm(maturity){
+        var maturityDate = moment(maturity, 'YYYY-MM-DD');
+        var monthDiff = maturityDate.diff(Date.now(), 'months');
+        return monthDiff;
+    }
+
+    // monthly payment + interest rate
+    function calculate_monthly_installment(principal_amt, interest_rate, maturity, repayment_period){
+        const loan_term = calculateLoanTerm(maturity)
+        console.log(loan_term)
+        const monthly_installment = ((principal_amt * interest_rate * (loan_term/12)) + principal_amt) / repayment_period
+        console.log(principal_amt, interest_rate, loan_term, repayment_period)
+        console.log(monthly_installment)
+        return monthly_installment
+    }
 
     function fundLoan(){
 
@@ -102,7 +120,11 @@ function LoanDetails() {
             "lender_account_num": account,
             "lender_phone": (userInfo.cellphone.countryCode) + (userInfo.cellphone.phoneNumber),
             "lender_email": userInfo.profile.email,
+            "loan_term": loanInfo["loan_term"],
         }
+
+        fundInformation["loan_term"] = calculateLoanTerm(loanInfo["maturity_date"])
+        fundInformation["monthly_installment"] = calculate_monthly_installment(loanInfo["principal"], loanInfo["interest_rate"], loanInfo["maturity_date"], loanInfo["repayment_period"])
 
         // need add check that u are not lending your own loan request
         console.log(fundInformation)
@@ -168,7 +190,7 @@ function LoanDetails() {
                 .catch((error) => {
                     console.log(error)
                 })
-            }
+    }
     
     return (
 		<div className='home'>
@@ -211,11 +233,11 @@ function LoanDetails() {
                 </div>
                 <div className='loaninfo grid-cols-3'> 
                     <InputText label="Loan ID" value= {loanInfo['loan_request_id']}/>
-                    <InputText label="Loan Term" value= {loanInfo['loan_term'] + " months"}/>
-                    <InputText label="Loan Period" value= {loanInfo['start_date'] + " to " + loanInfo['maturity_date']} />
+                    {loanInfo["loan_term"] !== "0" ? <InputText label="Loan Term" value= {loanInfo['loan_term'] + " months"}/> : <></>}
+                    <InputText label="Repayment Duration" value= {loanInfo['start_date'] + " to " + loanInfo['maturity_date']} />
                     <InputText label="Loan Amount" value= {"SGD $" + loanInfo['principal']} />
                     <InputText label="Interest Rate" value= {loanInfo['interest_rate'] + " %"}/>
-                    <InputText label="Repayment Amount" value= {"SGD $" + loanInfo['monthly_installment']} />
+                    {loanInfo["monthly_installment"] !== 0 ? <InputText label="Repayment Amount" value= {"SGD $" + loanInfo['monthly_installment']} /> : <></>}
                     <InputText label="Repayment Period" value= {loanInfo['repayment_period'] + " months"}/>
                     <InputText label="Loan Purpose" value= {loanInfo['reason']}/>
                 </div> 
@@ -233,6 +255,7 @@ function LoanDetails() {
                     <button className='loanbutton-details' onClick={fundLoan}>
                         Fund the loan
                     </button> 
+                    { error !== "" ? <span clasName="text-base">{error}</span> : <></> }
                 </>: <></>}
             </>
             : <div></div>}

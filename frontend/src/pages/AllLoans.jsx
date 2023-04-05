@@ -23,7 +23,6 @@ function AllLoans() {
                         loanId: data["loan_request_id"],
                         name: data["borrower_name"],
                         loanAmt: data["principal"],
-                        loanTerms: data["loan_term"]
                     }
                     tableData.push(loanData);
                 }
@@ -65,13 +64,6 @@ function AllLoans() {
             title: 'Loan Amount',
             dataIndex: 'loanAmt',
             key: 'loanAmt',
-            align: 'center',
-            render: (text) => <span className='font-normal'>{text}</span>
-        },
-        {
-            title: 'Loan Terms',
-            key: 'loanTerms',
-            dataIndex: 'loanTerms',
             align: 'center',
             render: (text) => <span className='font-normal'>{text}</span>
         },
