@@ -83,3 +83,19 @@ def invoke_get_customer_accounts(headerObj):
     return response
    
 
+##################################################################
+###### GET CUSTOMER EXISTING ACCOUNT DETAILS
+##################################################################
+def invoke_get_account_history(headerObj,contentObj):
+    
+    final_url="{0}?Header={1}&Content={2}".format(url(),json.dumps(headerObj),json.dumps(contentObj))
+    print("URL")
+    print(final_url)
+    final_url = final_url.replace("\\",'')
+    print("MODEIFIE")
+    print(final_url)
+
+    
+    response = requests.post(final_url)
+    print(response)
+    return response

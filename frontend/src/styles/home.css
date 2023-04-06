@@ -5,3 +5,7 @@
 .card {
 	@apply bg-neutral-200 text-black p-8 mx-2 mb-6 border rounded-md;
 }
+
+.card-sm {
+	@apply bg-white text-black text-sm p-4 border rounded-md;
+}

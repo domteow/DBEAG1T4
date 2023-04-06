@@ -132,6 +132,43 @@ def customer_get_details():
             } 
        )
 
+@app.route("/customer/getaccounthistory", methods=['POST'])
+def customer_get_account_history():
+    data = request.get_json()
+    print("ojsaudgiu")
+    print(data)
+    print(data['Header'])
+    print(data['Content'])
+    response = invokes_tbank.invoke_get_account_history(data['Header'],data['Content'])
+    print(response.json())
+    serviceRespHeader = response.json()['Content']['ServiceResponse']['ServiceRespHeader']
+    errorCode = serviceRespHeader['GlobalErrorID']
+
+    if errorCode == '010000':
+    
+       return jsonify(
+            {
+                "code": 200,
+                "data": response.json()
+            } 
+       )
+
+    elif errorCode == '010041':
+        return jsonify(
+            {
+                "code": 400,
+                "data": {},
+                'message': 'OTP has expired.\nYou will be receiving a SMS'
+            } 
+       )
+    else:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {},
+                'message': serviceRespHeader['ErrorText']
+            } 
+       )
 
 
 
