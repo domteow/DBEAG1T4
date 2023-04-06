@@ -1,3 +1,7 @@
 .home {
 	@apply bg-background text-white p-4 text-2xl font-bold;
 }
+
+.card {
+	@apply bg-neutral-200 text-black p-8 mx-2 mb-6 border rounded-md;
+}
