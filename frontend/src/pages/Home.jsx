@@ -89,7 +89,7 @@ function Home() {
 				} else if (Object.keys(accountDet).length === 20) {
 					setAccountDetail([accountDet]);
 				} else {
-					setAccountDetail(accountDet);
+					setAccountDetail(accountDet.reverse());
 				}
 			})
 			.catch((error) => {
