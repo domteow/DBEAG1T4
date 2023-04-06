@@ -4,6 +4,9 @@ import '../styles/home.css';
 import InputText from '../components/InputText';
 
 function Home() {
+	function isObjEmpty(obj) {
+		return Object.keys(obj).length === 0;
+	}
 	const userInfo = JSON.parse(localStorage.getItem('user'));
 	const [accountList, setAccountList] = useState(undefined);
 	const [accountDetail, setAccountDetail] = useState(undefined);
@@ -34,8 +37,6 @@ function Home() {
 
 				setAccountList(accounts);
 				setSelectedAccount(0);
-				console.log('aisudgiuasgdui');
-				console.log(accounts[0]);
 				getAccountHistory(accounts[0]);
 			})
 			.catch((error) => {
@@ -72,19 +73,24 @@ function Home() {
 			},
 			body: JSON.stringify(bodyJSON),
 		};
-		console.log(options);
 
 		const res_acc = fetch(getAccountURL, options)
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				let finAccDet = [];
 				const accountDet =
 					data['data']['Content']['ServiceResponse']['CDMTransactionDetail'][
 						'transaction_Detail'
 					];
-				finAccDet.push(...accountDet);
-				setAccountDetail(finAccDet);
+				if (!accountDet) {
+					setAccountDetail([]);
+				} else if (isObjEmpty(accountDet)) {
+					setAccountDetail([]);
+				} else if (Object.keys(accountDet).length === 20) {
+					setAccountDetail([accountDet]);
+				} else {
+					setAccountDetail(accountDet);
+				}
 			})
 			.catch((error) => {
 				console.log(error);
